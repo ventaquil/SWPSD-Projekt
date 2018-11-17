@@ -1,0 +1,115 @@
+﻿INSERT INTO Genres(genre) VALUES ('Film akcji'); 
+INSERT INTO Genres(genre) VALUES ('Komedia'); 
+INSERT INTO Genres(genre) VALUES ('Romans'); 
+INSERT INTO Genres(genre) VALUES ('Film animowany'); 
+INSERT INTO Genres(genre) VALUES ('Horror'); 
+INSERT INTO Genres(genre) VALUES ('Film dokumentalny'); 
+
+INSERT INTO Movies(title) VALUES ('World War Z'); 
+INSERT INTO Movies(title) VALUES ('Underworld'); 
+INSERT INTO Movies(title) VALUES ('Shrek'); 
+INSERT INTO Movies(title) VALUES ('Potwory i spółka'); 
+INSERT INTO Movies(title) VALUES ('Turysta'); 
+INSERT INTO Movies(title) VALUES ('Latawce'); 
+INSERT INTO Movies(title) VALUES ('Wojownik'); 
+INSERT INTO Movies(title) VALUES ('Zmierzch'); 
+
+INSERT INTO Tags VALUES (1,1); 
+INSERT INTO Tags VALUES (1,5); 
+INSERT INTO Tags VALUES (2,1); 
+INSERT INTO Tags VALUES (2,5); 
+INSERT INTO Tags VALUES (3,2); 
+INSERT INTO Tags VALUES (3,4);
+INSERT INTO Tags VALUES (4,2); 
+INSERT INTO Tags VALUES (4,4);
+INSERT INTO Tags VALUES (5,3); 
+INSERT INTO Tags VALUES (6,1);
+INSERT INTO Tags VALUES (6,3); 
+INSERT INTO Tags VALUES (7,1);
+INSERT INTO Tags VALUES (7,3); 
+INSERT INTO Tags VALUES (8,3);
+INSERT INTO Tags VALUES (8,5); 
+
+INSERT INTO Auditoriums VALUES (1); 
+INSERT INTO Auditoriums VALUES (2); 
+INSERT INTO Auditoriums VALUES (3);
+
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 1, 1); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 1, 2); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 1, 3); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 1, 4); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 1, 5); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 2, 1); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 2, 2); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 2, 3); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 2, 4); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 2, 5); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 3, 1); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 3, 2); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 3, 3); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 3, 4); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (1, 3, 5); 
+
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (2, 1, 1); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (2, 1, 2); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (2, 1, 3); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (2, 1, 4); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (2, 2, 1); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (2, 2, 2); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (2, 2, 3); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (2, 2, 4); 
+
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (3, 1, 1); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (3, 1, 2); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (3, 1, 3); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (3, 1, 4); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (3, 1, 5); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (3, 1, 6); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (3, 1, 7); 
+INSERT INTO Seats(auditoriumID, rowNo, seatNo) VALUES (3, 1, 8); 
+
+INSERT INTO Prices(price, priceDescription) VALUES (24.0, 'Bilet normalny');
+INSERT INTO Prices(price, priceDescription) VALUES (16.0, 'Bilet studencki');
+INSERT INTO Prices(price, priceDescription) VALUES (18.0, 'Bilet ulgowy');
+INSERT INTO Prices(price, priceDescription) VALUES (12.0, 'Bilet poniedziałkowy poranny');
+INSERT INTO Prices(price, priceDescription) VALUES (8.50, 'Bilet dla dzieci do lat 56');
+INSERT INTO Prices(price, priceDescription) VALUES (99.99, 'Bilet dla niegrzecznych klientów');
+
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (1, 1, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
+                                                                                                  
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 2, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 3, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 2, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 3, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 2, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 3, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 2, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 3, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 4, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 4, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 4, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (2, 4, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
+                                                                                                  
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 5, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 6, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 7, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 8, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 5, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 6, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 7, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 8, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 5, CONVERT(VARCHAR(10), GETDATE(), 126), '14:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 6, CONVERT(VARCHAR(10), GETDATE(), 126), '16:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 7, CONVERT(VARCHAR(10), GETDATE(), 126), '18:30:00'); 
+INSERT INTO Screenings(auditoriumID, movieID, screeningDate, screeningTime) VALUES (3, 8, CONVERT(VARCHAR(10), GETDATE(), 126), '20:30:00'); 
