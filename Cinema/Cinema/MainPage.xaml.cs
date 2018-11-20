@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.Speech.Recognition;
+using Microsoft.Speech.Recognition.SrgsGrammar;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,26 +22,106 @@ namespace Cinema
     /// <summary>
     /// Interaction logic for MainPage.xaml
     /// </summary>
-    public partial class MainPage : Page
+    public partial class MainPage : Page, SpeechControllable
     {
-        private Window window;
-        private SqlConnection dbConnection;
+        private SpeechRecognitionEngine speechRecognitionEngine;
 
-        public MainPage(Window window, SqlConnection dbConnection)
+        public MainPage(Window window, SqlConnection sqlConnection) : base(window, sqlConnection)
         {
-            this.window = window;
-            this.dbConnection = dbConnection;
             InitializeComponent();
+
+            InitializeSpeechRecognition();
+
+            EnableSpeechRecognition();
+        }
+
+        public void EnableSpeechRecognition()
+        {
+            try
+            {
+                speechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
+            }
+            catch (InvalidOperationException)
+            {
+                // pass
+            }
+        }
+
+        public Grammar GetSpeechGrammar()
+        {
+            SrgsDocument srgsDocument = new SrgsDocument("./Resources/MainPage.srgs");
+
+            return new Grammar(srgsDocument);
+        }
+
+        public void InitializeSpeechRecognition()
+        {
+            CultureInfo cultureInfo = new CultureInfo("pl-PL");
+
+            speechRecognitionEngine = new SpeechRecognitionEngine(cultureInfo);
+            speechRecognitionEngine.LoadGrammarAsync(GetSpeechGrammar());
+            speechRecognitionEngine.SetInputToDefaultAudioDevice();
+            speechRecognitionEngine.SpeechRecognized += SpeechRecognitionEngine_SpeechRecognized;
+        }
+
+        private void MoveToOrderPage()
+        {
+            ChangePage(new OrderPage(window, this, sqlConnection));
+        }
+
+        private void MoveToSearchPage()
+        {
+            ChangePage(new SearchPage(window, this, sqlConnection));
         }
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
-            window.Content = new OrderPage(window, this, dbConnection);
+            MoveToOrderPage();
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            window.Content = new SearchPage(window, this, dbConnection);
+            MoveToSearchPage();
+        }
+
+        private void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        {
+            RecognitionResult result = e.Result;
+
+            Console.WriteLine(result.Semantics.Value + ") " + result.Text + " (" + result.Confidence + ")");
+
+            if (result.Confidence < 0.6)
+            {
+                // repeat
+            }
+            else
+            {
+                string command = result.Semantics.Value.ToString().ToLower();
+                switch (command)
+                {
+                    case "help":
+                        break;
+                    case "order":
+                        MoveToOrderPage();
+                        break;
+                    case "search":
+                        MoveToSearchPage();
+                        break;
+                    case "quit":
+                        window.Close();
+                        break;
+                }
+            }
+        }
+
+        public void StopSpeechRecognition()
+        {
+            speechRecognitionEngine.RecognizeAsyncCancel();
+        }
+
+        public void WaitForSpeechRecognition()
+        {
+            speechRecognitionEngine.RecognizeAsyncStop();
         }
     }
 }

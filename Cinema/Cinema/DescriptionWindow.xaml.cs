@@ -21,32 +21,33 @@ namespace Cinema
     public partial class DescriptionWindow : Window
     {
         private Window window;
-        private Page lastPage;
-        private SqlConnection dbConnection;
+        private Page previousPage;
+        private SqlConnection sqlConnection;
         private string movieTitle;
 
-        public DescriptionWindow(Window window, Page lastPage, SqlConnection dbConnection, string movieTitle)
+        public DescriptionWindow(Window window, Page previousPage, SqlConnection sqlConnection, string movieTitle)
         {
             this.window = window;
-            this.lastPage = lastPage;
-            this.dbConnection = dbConnection;
+            this.previousPage = previousPage;
+            this.sqlConnection = sqlConnection;
             this.movieTitle = movieTitle;
 
             InitializeComponent();
-            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             TitleTextBlock.Text = movieTitle;
         }
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
-            window.Content = new MovieHoursPage(window, dbConnection, lastPage, movieTitle);
-            this.Close();
+            window.Content = new MovieHoursPage(window, previousPage, sqlConnection, movieTitle);
+
+            Close();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
     }
 }

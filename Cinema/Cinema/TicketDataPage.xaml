@@ -1,4 +1,4 @@
-﻿<Page x:Class="Cinema.TicketDataPage"
+﻿<local:Page x:Class="Cinema.TicketDataPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -210,7 +210,7 @@
     <Grid>
 
         <Grid.Background>
-            <ImageBrush ImageSource="res/bg.jpg" Stretch="Fill" Opacity="0.5"/>
+            <ImageBrush ImageSource="Resources/background.jpg" Stretch="Fill" Opacity="0.5"/>
         </Grid.Background>
 
         <Button Margin="-690,-737,0,0" Style="{StaticResource ButtonStyle}"
@@ -235,4 +235,4 @@
                 Content="Gotowe" x:Name="AcceptButton" Click="AcceptButton_Click"/>
 
     </Grid>
-</Page>
+</local:Page>

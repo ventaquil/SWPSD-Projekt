@@ -21,62 +21,69 @@ namespace Cinema
     /// </summary>
     public partial class SeatButton : UserControl
     {
-        private int screeningId, rowNo, seatNo;
+        private Page lastPage;
+        private int rowNo, screeningId, seatNo;
+        private SqlConnection sqlConnection;
         private bool taken;
         private Window window;
-        private Page lastPage;
-        private SqlConnection dbConnection;
 
-        public SeatButton(int screeningId, int rowNo, int seatNo, Window window, Page lastPage, SqlConnection dbConnection)
+        public SeatButton(Window window, Page lastPage, SqlConnection sqlConnection, int screeningId, int rowNo, int seatNo)
         {
+            this.window = window;
+            this.lastPage = lastPage;
+            this.sqlConnection = sqlConnection;
             this.screeningId = screeningId;
             this.rowNo = rowNo;
             this.seatNo = seatNo;
-            this.window = window;
-            this.lastPage = lastPage;
-            this.dbConnection = dbConnection;
 
             InitializeComponent();
 
             CheckIfTaken();
+
             InitSeatButton();
         }
 
         private void CheckIfTaken()
         {
-            dbConnection.Open();
-            SqlCommand command = new SqlCommand(
-                "select count(Tickets.id) " +
-                "from Tickets, Screenings, Seats " +
-                "where Tickets.seatID = Seats.id and " +
-                "Tickets.screeningID = Screenings.id and " +
-                "Screenings.id = " + screeningId +
-                "and Seats.rowNo = " + rowNo +
-                "and Seats.seatNo = " + seatNo,
-                dbConnection);
-            SqlDataReader reader = command.ExecuteReader();
-            reader.Read();
-            if (int.Parse(String.Format("{0}", reader[0])) > 0) taken = true;
-            else taken = false;
-            dbConnection.Close();
+            sqlConnection.Open();
+
+            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            {
+                sqlCommand.CommandText = "select count(Tickets.id) " +
+                    "from Tickets, Screenings, Seats " +
+                    "where Tickets.seatID = Seats.id and " +
+                    "Tickets.screeningID = Screenings.id and " +
+                    "Screenings.id = " + screeningId +
+                    "and Seats.rowNo = " + rowNo +
+                    "and Seats.seatNo = " + seatNo;
+
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                sqlDataReader.Read();
+
+                taken = (int.Parse(String.Format("{0}", sqlDataReader[0])) > 0);
+
+                sqlDataReader.Close();
+            }
+
+            sqlConnection.Close();
         }
 
         private void InitSeatButton()
         {
             Seat.Content = "Rząd: " + rowNo + "\nMiejsce: " + seatNo;
-            if (taken)
-                Seat.Background = Brushes.Red;
-            else
-                Seat.Background = Brushes.Green;
+
+            Seat.Background = (taken) ? Brushes.Red : Brushes.Green;
         }
 
         private void Seat_Click(object sender, RoutedEventArgs e)
         {
             if (taken)
+            {
                 MessageBox.Show("To miejsce jest już zajęte!");
+            }
             else
             {
-                window.Content = new TicketDataPage(screeningId, rowNo, seatNo, window, lastPage, dbConnection);
+                window.Content = new TicketDataPage(window, lastPage, sqlConnection, screeningId, rowNo, seatNo);
             }
         }
     }
