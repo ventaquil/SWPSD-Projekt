@@ -62,7 +62,7 @@
     <Grid>
 
         <Grid.Background>
-            <ImageBrush ImageSource="res/bg.jpg" Stretch="Fill" Opacity="0.5"/>
+            <ImageBrush ImageSource="Resources/background.jpg" Stretch="Fill" Opacity="0.5"/>
         </Grid.Background>
 
         <TextBlock Margin="10,-300,10,0" FontSize="50" Style="{StaticResource TextBlockStyle}"
