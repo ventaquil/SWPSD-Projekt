@@ -31,17 +31,12 @@ namespace Cinema
 
         protected void ChangePage(Page page)
         {
-            if (page == null)
-            {
-                throw new NullReferenceException("Page cannot be null.");
-            }
-
             if (this is SpeechControllable)
             {
                 ((SpeechControllable)this).StopSpeechRecognition();
             }
 
-            window.Content = page;
+            window.Content = page ?? throw new NullReferenceException("Page cannot be null.");
 
             if (page is SpeechControllable)
             {
