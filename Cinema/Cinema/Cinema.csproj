@@ -97,6 +97,7 @@
     <Compile Include="DescriptionWindow.xaml.cs">
       <DependentUpon>DescriptionWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SpeechControllable.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
