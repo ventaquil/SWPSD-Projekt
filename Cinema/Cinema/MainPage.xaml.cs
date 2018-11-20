@@ -1,4 +1,5 @@
 ﻿using Microsoft.Speech.Recognition;
+using Microsoft.Speech.Recognition.SrgsGrammar;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -47,14 +48,9 @@ namespace Cinema
 
         public Grammar GetSpeechGrammar()
         {
-            Choices choices = new Choices();
-            choices.Add("Raz");
-            choices.Add("Dwa");
-            choices.Add("Trzy");
-
-            GrammarBuilder grammarBuilder = new GrammarBuilder(choices);
-
-            return new Grammar(grammarBuilder);
+            SrgsDocument srgsDocument = new SrgsDocument("./Resources/MainPage.srgs");
+            
+            return new Grammar(srgsDocument);
         }
 
         public void InitializeSpeechRecognition()
@@ -79,7 +75,7 @@ namespace Cinema
 
         private void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            Console.WriteLine(e.Result.Text);
+            Console.WriteLine(e.Result.Semantics.Value + ") " + e.Result.Text);
         }
 
         public void StopSpeechRecognition()
