@@ -40,7 +40,8 @@ namespace Cinema
             try
             {
                 speechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
-            } catch (InvalidOperationException)
+            }
+            catch (InvalidOperationException)
             {
                 // pass
             }
@@ -49,7 +50,7 @@ namespace Cinema
         public Grammar GetSpeechGrammar()
         {
             SrgsDocument srgsDocument = new SrgsDocument("./Resources/MainPage.srgs");
-            
+
             return new Grammar(srgsDocument);
         }
 
@@ -63,19 +64,54 @@ namespace Cinema
             speechRecognitionEngine.SpeechRecognized += SpeechRecognitionEngine_SpeechRecognized;
         }
 
-        private void OrderButton_Click(object sender, RoutedEventArgs e)
+        private void MoveToOrderPage()
         {
             ChangePage(new OrderPage(window, this, sqlConnection));
         }
 
-        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        private void MoveToSearchPage()
         {
             ChangePage(new SearchPage(window, this, sqlConnection));
         }
 
+        private void OrderButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveToOrderPage();
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveToSearchPage();
+        }
+
         private void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            Console.WriteLine(e.Result.Semantics.Value + ") " + e.Result.Text);
+            RecognitionResult result = e.Result;
+
+            Console.WriteLine(result.Semantics.Value + ") " + result.Text + " (" + result.Confidence + ")");
+
+            if (result.Confidence < 0.6)
+            {
+                // repeat
+            }
+            else
+            {
+                string command = result.Semantics.Value.ToString().ToLower();
+                switch (command)
+                {
+                    case "help":
+                        break;
+                    case "order":
+                        MoveToOrderPage();
+                        break;
+                    case "search":
+                        MoveToSearchPage();
+                        break;
+                    case "quit":
+                        window.Close();
+                        break;
+                }
+            }
         }
 
         public void StopSpeechRecognition()
