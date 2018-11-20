@@ -23,11 +23,11 @@ namespace Cinema
     public partial class MainWindow : Window
     {
         private String databasePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "CinemaDatabase.mdf");
-        
+
         public MainWindow()
         {
             InitializeComponent();
-            
+
             // Create database if not exists
             if (!File.Exists(databasePath))
             {
@@ -35,7 +35,7 @@ namespace Cinema
 
                 ExecuteCreateQueries();
             }
-            
+
             Content = new MainPage(this, CreateSqlConnection());
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
