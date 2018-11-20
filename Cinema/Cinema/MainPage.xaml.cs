@@ -38,6 +38,8 @@ namespace Cinema
             EnableSpeechRecognition();
 
             InitializeSpeechSynthesis();
+
+            SpeakHello();
         }
 
         public void EnableSpeechRecognition()
@@ -88,6 +90,11 @@ namespace Cinema
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
             MoveToOrderPage();
+        }
+
+        private void SpeakHello()
+        {
+            speechSynthesizer.SpeakAsync("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
