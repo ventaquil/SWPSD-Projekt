@@ -1,5 +1,6 @@
 ﻿using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Recognition.SrgsGrammar;
+using Microsoft.Speech.Synthesis;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -26,6 +27,8 @@ namespace Cinema
     {
         private SpeechRecognitionEngine speechRecognitionEngine;
 
+        private SpeechSynthesizer speechSynthesizer;
+
         public MainPage(Window window, SqlConnection sqlConnection) : base(window, sqlConnection)
         {
             InitializeComponent();
@@ -33,6 +36,8 @@ namespace Cinema
             InitializeSpeechRecognition();
 
             EnableSpeechRecognition();
+
+            InitializeSpeechSynthesis();
         }
 
         public void EnableSpeechRecognition()
@@ -62,6 +67,12 @@ namespace Cinema
             speechRecognitionEngine.LoadGrammarAsync(GetSpeechGrammar());
             speechRecognitionEngine.SetInputToDefaultAudioDevice();
             speechRecognitionEngine.SpeechRecognized += SpeechRecognitionEngine_SpeechRecognized;
+        }
+
+        private void InitializeSpeechSynthesis()
+        {
+            speechSynthesizer = new SpeechSynthesizer();
+            speechSynthesizer.SetOutputToDefaultAudioDevice();
         }
 
         private void MoveToOrderPage()
