@@ -1,7 +1,9 @@
 ﻿using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Recognition.SrgsGrammar;
+using Microsoft.Speech.Synthesis;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
@@ -26,13 +28,25 @@ namespace Cinema
     {
         private SpeechRecognitionEngine speechRecognitionEngine;
 
+        private SpeechSynthesizer speechSynthesizer;
+
         public MainPage(Window window, SqlConnection sqlConnection) : base(window, sqlConnection)
         {
             InitializeComponent();
 
-            InitializeSpeechRecognition();
+            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            backgroundWorker.DoWork += InitializeSpeech;
+            backgroundWorker.RunWorkerAsync();
+        }
 
-            EnableSpeechRecognition();
+        private void Close()
+        {
+            window.Close();
+        }
+
+        private void Dispatch(Action action)
+        {
+            Dispatcher.BeginInvoke(action);
         }
 
         public void EnableSpeechRecognition()
@@ -43,7 +57,9 @@ namespace Cinema
             }
             catch (InvalidOperationException)
             {
-                // pass
+            }
+            catch (NullReferenceException)
+            {
             }
         }
 
@@ -54,6 +70,17 @@ namespace Cinema
             return new Grammar(srgsDocument);
         }
 
+        private void InitializeSpeech(object sender, DoWorkEventArgs e)
+        {
+            InitializeSpeechSynthesis();
+
+            SpeakHello();
+
+            InitializeSpeechRecognition();
+
+            EnableSpeechRecognition();
+        }
+
         public void InitializeSpeechRecognition()
         {
             CultureInfo cultureInfo = new CultureInfo("pl-PL");
@@ -62,6 +89,12 @@ namespace Cinema
             speechRecognitionEngine.LoadGrammarAsync(GetSpeechGrammar());
             speechRecognitionEngine.SetInputToDefaultAudioDevice();
             speechRecognitionEngine.SpeechRecognized += SpeechRecognitionEngine_SpeechRecognized;
+        }
+
+        private void InitializeSpeechSynthesis()
+        {
+            speechSynthesizer = new SpeechSynthesizer();
+            speechSynthesizer.SetOutputToDefaultAudioDevice();
         }
 
         private void MoveToOrderPage()
@@ -79,6 +112,35 @@ namespace Cinema
             MoveToOrderPage();
         }
 
+        private void Speak(String message)
+        {
+            StopSpeechRecognition();
+
+            speechSynthesizer.Speak(message);
+
+            EnableSpeechRecognition();
+        }
+
+        private void SpeakHello()
+        {
+            Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
+        }
+
+        private void SpeakHelp()
+        {
+            Speak("Aby kupić bilet powiedz ZAMÓW BILET. Aby wyszukać film powiedz WYSZUKIWARKA FILMÓW. Aby wyjść powiedz ZAKOŃCZ.");
+        }
+
+        private void SpeakRepeat()
+        {
+            Speak("Powtórz proszę.");
+        }
+
+        private void SpeakQuit()
+        {
+            Speak("Zapraszam ponownie.");
+        }
+
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             MoveToSearchPage();
@@ -92,7 +154,7 @@ namespace Cinema
 
             if (result.Confidence < 0.6)
             {
-                // repeat
+                SpeakRepeat();
             }
             else
             {
@@ -100,15 +162,17 @@ namespace Cinema
                 switch (command)
                 {
                     case "help":
+                        SpeakHelp();
                         break;
                     case "order":
-                        MoveToOrderPage();
+                        Dispatch(MoveToOrderPage);
                         break;
                     case "search":
-                        MoveToSearchPage();
+                        Dispatch(MoveToSearchPage);
                         break;
                     case "quit":
-                        window.Close();
+                        SpeakQuit();
+                        Dispatch(Close);
                         break;
                 }
             }
@@ -116,12 +180,30 @@ namespace Cinema
 
         public void StopSpeechRecognition()
         {
-            speechRecognitionEngine.RecognizeAsyncCancel();
+            try
+            {
+                speechRecognitionEngine.RecognizeAsyncCancel();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
         }
 
         public void WaitForSpeechRecognition()
         {
-            speechRecognitionEngine.RecognizeAsyncStop();
+            try
+            {
+                speechRecognitionEngine.RecognizeAsyncStop();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
         }
     }
 }
