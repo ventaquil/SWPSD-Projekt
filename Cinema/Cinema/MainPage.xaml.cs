@@ -114,10 +114,15 @@ namespace Cinema
         {
             speechSynthesizer.Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
         }
+        
+        private void SpeakRepeat()
+        {
+            speechSynthesizer.Speak("Powtórz proszę.");
+        }
 
         private void SpeakQuit()
         {
-            speechSynthesizer.Speak("Zapraszam ponownie");
+            speechSynthesizer.Speak("Zapraszam ponownie.");
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -133,7 +138,7 @@ namespace Cinema
 
             if (result.Confidence < 0.6)
             {
-                // repeat
+                SpeakRepeat();
             }
             else
             {
