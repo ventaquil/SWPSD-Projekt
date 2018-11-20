@@ -23,15 +23,10 @@ namespace Cinema
     /// </summary>
     public partial class MainPage : Page, SpeechControllable
     {
-        private SqlConnection dbConnection;
         private SpeechRecognitionEngine speechRecognitionEngine;
-        private Window window;
 
-        public MainPage(Window window, SqlConnection dbConnection)
+        public MainPage(Window window, SqlConnection sqlConnection) : base(window, sqlConnection)
         {
-            this.window = window;
-            this.dbConnection = dbConnection;
-
             InitializeComponent();
 
             InitializeSpeechRecognition();
@@ -39,16 +34,15 @@ namespace Cinema
             EnableSpeechRecognition();
         }
 
-        private void ChangePage(Page page)
-        {
-            StopSpeechRecognition();
-
-            window.Content = page;
-        }
-
         public void EnableSpeechRecognition()
         {
-            speechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
+            try
+            {
+                speechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
+            } catch (InvalidOperationException)
+            {
+                // pass
+            }
         }
 
         public Grammar GetSpeechGrammar()
@@ -75,12 +69,12 @@ namespace Cinema
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
-            ChangePage(new OrderPage(window, this, dbConnection));
+            ChangePage(new OrderPage(window, this, sqlConnection));
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            ChangePage(new SearchPage(window, this, dbConnection));
+            ChangePage(new SearchPage(window, this, sqlConnection));
         }
 
         private void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

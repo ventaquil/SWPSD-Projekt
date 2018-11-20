@@ -24,9 +24,6 @@ namespace Cinema
         private int screeningId, seatId, priceId;
         private float price;
         private string bookerName;
-        private Window window;
-        private Page lastPage;
-        private SqlConnection dbConnection;
 
         private string[] dataTags =
         {
@@ -39,91 +36,98 @@ namespace Cinema
             "Cena: "
         };
 
-        public SummaryPage(int screeningId, int seatId, int priceId, float price, string bookerName, Window window, Page lastPage, SqlConnection dbConnection)
+        public SummaryPage(Window window, Page previousPage, SqlConnection sqlConnection, int screeningId, int seatId, int priceId, float price, string bookerName) : base(window, previousPage, sqlConnection)
         {
             this.screeningId = screeningId;
             this.seatId = seatId;
             this.priceId = priceId;
             this.price = price;
             this.bookerName = bookerName;
-            this.window = window;
-            this.lastPage = lastPage;
-            this.dbConnection = dbConnection;
 
             InitializeComponent();
+
             ShowOrderData();
         }
 
         private void ShowOrderData()
         {
-            dbConnection.Open();
+            sqlConnection.Open();
 
-            SqlCommand titleCommand = new SqlCommand(
-                "select Movies.title " +
-                "from Movies, Screenings " +
-                "where Screenings.movieID = Movies.id and Screenings.id = " + screeningId, 
-                dbConnection);
-            SqlDataReader titleReader = titleCommand.ExecuteReader();
-            titleReader.Read();
-            OrderDataComboBox.Items.Add(dataTags[0] + String.Format("{0}", titleReader[0]));
-            titleReader.Close();
+            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            {
+                sqlCommand.CommandText = "select Movies.title " +
+                    "from Movies, Screenings " +
+                    "where Screenings.movieID = Movies.id and Screenings.id = " + screeningId;
 
-            SqlCommand screeningCommand = new SqlCommand(
-                "select Screenings.screeningDate, Screenings.screeningTime, Screenings.auditoriumID " +
-                "from Screenings " +
-                "where Screenings.id = " + screeningId, 
-                dbConnection);
-            SqlDataReader screeningReader = screeningCommand.ExecuteReader();
-            screeningReader.Read();
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                sqlDataReader.Read();
+                OrderDataComboBox.Items.Add(dataTags[0] + String.Format("{0}", sqlDataReader[0]));
+                sqlDataReader.Close();
+            }
 
-            string date = String.Format("{0}", screeningReader[0]).Split(' ')[0];
+            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            {
+                sqlCommand.CommandText = "select Screenings.screeningDate, Screenings.screeningTime, Screenings.auditoriumID " +
+                    "from Screenings " +
+                    "where Screenings.id = " + screeningId;
 
-            string[] hourDivided = String.Format("{0}", screeningReader[1]).Split(':');
-            string hour = hourDivided[0] + ":" + hourDivided[1];
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                sqlDataReader.Read();
 
-            OrderDataComboBox.Items.Add(dataTags[1] + String.Format("{0}", date));
-            OrderDataComboBox.Items.Add(dataTags[2] + String.Format("{0}", hour));
-            OrderDataComboBox.Items.Add(dataTags[3] + String.Format("{0}", screeningReader[2]));
-            screeningReader.Close();
+                string date = String.Format("{0}", sqlDataReader[0]).Split(' ')[0];
 
-            SqlCommand seatsCommand = new SqlCommand(
-                "select Seats.rowNo, Seats.seatNo " +
-                "from Seats " +
-                "where Seats.id = " + seatId,
-                dbConnection);
-            SqlDataReader seatsReader = seatsCommand.ExecuteReader();
-            seatsReader.Read();
-            OrderDataComboBox.Items.Add(dataTags[4] + " rząd " + String.Format("{0}", seatsReader[0]) + ", miejsce " + String.Format("{0}", seatsReader[1]));
+                string[] hourDivided = String.Format("{0}", sqlDataReader[1]).Split(':');
+                string hour = hourDivided[0] + ":" + hourDivided[1];
 
-            OrderDataComboBox.Items.Add(dataTags[5] + bookerName);
-            OrderDataComboBox.Items.Add(dataTags[6] + price + " zł");
+                OrderDataComboBox.Items.Add(dataTags[1] + String.Format("{0}", date));
+                OrderDataComboBox.Items.Add(dataTags[2] + String.Format("{0}", hour));
+                OrderDataComboBox.Items.Add(dataTags[3] + String.Format("{0}", sqlDataReader[2]));
 
-            dbConnection.Close();
+                sqlDataReader.Close();
+            }
+
+            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            {
+                sqlCommand.CommandText = "select Seats.rowNo, Seats.seatNo " +
+                    "from Seats " +
+                    "where Seats.id = " + seatId;
+
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                sqlDataReader.Read();
+
+                OrderDataComboBox.Items.Add(dataTags[4] + " rząd " + String.Format("{0}", sqlDataReader[0]) + ", miejsce " + String.Format("{0}", sqlDataReader[1]));
+                OrderDataComboBox.Items.Add(dataTags[5] + bookerName);
+                OrderDataComboBox.Items.Add(dataTags[6] + price + " zł");
+
+                sqlDataReader.Close();
+            }
+
+            sqlConnection.Close();
         }
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
-            dbConnection.Open();
+            sqlConnection.Open();
 
-            SqlCommand command = new SqlCommand(
-                "insert into Tickets " +
-                "(seatID, screeningID, priceID, bookerName) " +
-                "values (" +
-                seatId + "," + screeningId + "," + priceId + ",'" + bookerName + "')",
-                dbConnection);
+            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            {
+                sqlCommand.CommandText = "insert into Tickets " +
+                    "(seatID, screeningID, priceID, bookerName) " +
+                    "values (" + seatId + "," + screeningId + "," + priceId + ",'" + bookerName + "')";
 
-            command.ExecuteNonQuery();
+                sqlCommand.ExecuteNonQuery();
+            }
 
-            dbConnection.Close();
+            sqlConnection.Close();
 
             MessageBox.Show("Bilet został zamówiony!");
 
-            window.Content = new MainPage(window, dbConnection);
+            ChangePage(new MainPage(window, sqlConnection));
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            window.Content = lastPage;
+            MoveBack();
         }
     }
 }

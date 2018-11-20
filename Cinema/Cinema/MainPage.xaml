@@ -1,4 +1,4 @@
-﻿<Page x:Class="Cinema.MainPage"
+﻿<local:Page x:Class="Cinema.MainPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -74,4 +74,4 @@
                 Content="Wyszukiwarka filmów" x:Name="SearchButton" Click="SearchButton_Click"/>
 
     </Grid>
-</Page>
+</local:Page>

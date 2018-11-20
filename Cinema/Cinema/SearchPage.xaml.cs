@@ -27,94 +27,100 @@ namespace Cinema
             "Gatunek",
             "Najpopularniejsze"
         };
-        private Window window;
-        private Page lastPage;
-        private SqlConnection dbConnection;
 
-        public SearchPage(Window window, Page lastPage, SqlConnection dbConnection)
+        public SearchPage(Window window, Page previousPage, SqlConnection sqlConnection) : base(window, previousPage, sqlConnection)
         {
-            this.window = window;
-            this.lastPage = lastPage;
-            this.dbConnection = dbConnection;
             InitializeComponent();
 
             InitComboBoxes();
-
-            CategoryComboBox.DropDownClosed += CategoryComboBox_DropDownClosed;
         }
 
         private void InitComboBoxes()
         {
             foreach (string category in categories)
+            {
                 CategoryComboBox.Items.Add(category);
+            }
 
-            dbConnection.Open();
-            SqlCommand command = new SqlCommand("select genre from Genres", dbConnection);
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-                GenreComboBox.Items.Add(String.Format("{0}",reader[0]));
-            dbConnection.Close();
+            sqlConnection.Open();
+
+            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            {
+                sqlCommand.CommandText = "select genre from Genres";
+
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                while (sqlDataReader.Read())
+                {
+                    GenreComboBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
+                }
+                sqlDataReader.Close();
+            }
+
+            sqlConnection.Close();
+
+            CategoryComboBox.DropDownClosed += CategoryComboBox_DropDownClosed;
         }
 
         private void CategoryComboBox_DropDownClosed(object sender, EventArgs e)
         {
             if (CategoryComboBox.SelectedItem != null)
             {
-                if (CategoryComboBox.SelectedItem.Equals("Gatunek"))
-                    GenreComboBox.Visibility = Visibility.Visible;
-                else
-                    GenreComboBox.Visibility = Visibility.Hidden;
+                GenreComboBox.Visibility = CategoryComboBox.SelectedItem.Equals("Gatunek") ? Visibility.Visible : Visibility.Hidden;
             }
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             ResultsListBox.Items.Clear();
-            if (CategoryComboBox.SelectedItem != null) {
-                if (CategoryComboBox.SelectedItem.Equals("Wszystkie"))
-                { 
-                    dbConnection.Open();
-                    SqlCommand command = new SqlCommand(
-                        "select distinct Movies.title " +
-                        "from Movies, Screenings " +
-                        "where Movies.id = Screenings.movieID and " +
-                        "Screenings.screeningDate = CONVERT(date,  GETDATE())", 
-                        dbConnection);
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                        ResultsListBox.Items.Add(String.Format("{0}", reader[0]));
-                    dbConnection.Close();
-                }
-                else if (CategoryComboBox.SelectedItem.Equals("Gatunek") && GenreComboBox.SelectedItem != null)
+
+            if (CategoryComboBox.SelectedItem != null)
+            {
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    dbConnection.Open();
-                    SqlCommand command = new SqlCommand("execute procedure_GetMoviesByGenre " + String.Format("'{0}'", GenreComboBox.SelectedItem),dbConnection);
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                        ResultsListBox.Items.Add(String.Format("{0}", reader[0]));
-                    dbConnection.Close();
+                    if (CategoryComboBox.SelectedItem.Equals("Wszystkie"))
+                    {
+                        sqlCommand.CommandText = "select distinct Movies.title " +
+                            "from Movies, Screenings " +
+                            "where Movies.id = Screenings.movieID and " +
+                            "Screenings.screeningDate = CONVERT(date,  GETDATE())";
+                    }
+                    else if (CategoryComboBox.SelectedItem.Equals("Gatunek") && (GenreComboBox.SelectedItem != null))
+                    {
+                        sqlCommand.CommandText = "execute procedure_GetMoviesByGenre " + String.Format("'{0}'", GenreComboBox.SelectedItem);
+                    }
+                    else if (CategoryComboBox.SelectedItem.Equals("Najpopularniejsze"))
+                    {
+                        sqlCommand.CommandText = "execute procedure_MostPopularMovies";
+                    }
+
+                    if (sqlCommand.CommandText.Length > 0)
+                    {
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        while (sqlDataReader.Read())
+                        {
+                            ResultsListBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
+                        }
+                        sqlDataReader.Close();
+                    }
                 }
-                else if (CategoryComboBox.SelectedItem.Equals("Najpopularniejsze"))
-                {
-                    dbConnection.Open();
-                    SqlCommand command = new SqlCommand("execute procedure_MostPopularMovies", dbConnection);
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                        ResultsListBox.Items.Add(String.Format("{0}", reader[0]));
-                    dbConnection.Close();
-                }
+
+                sqlConnection.Close();
             }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            window.Content = lastPage;
+            MoveBack();
         }
 
         private void ResultsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if(!String.Format("{0}", ResultsListBox.SelectedItem).Equals(""))
-                new DescriptionWindow(window, this, dbConnection, String.Format("{0}", ResultsListBox.SelectedItem)).Show();
+            if (String.Format("{0}", ResultsListBox.SelectedItem).Length > 0)
+            {
+                new DescriptionWindow(window, this, sqlConnection, String.Format("{0}", ResultsListBox.SelectedItem)).Show();
+            }
         }
     }
 }

@@ -8,19 +8,23 @@ using System.Windows;
 
 namespace Cinema
 {
-    public partial class Page : System.Windows.Controls.Page
+    public class Page : System.Windows.Controls.Page
     {
-        private readonly Page previousPage;
+        protected readonly Page previousPage;
 
-        private readonly SqlConnection sqlConnection;
+        protected readonly SqlConnection sqlConnection;
 
-        private readonly Window window;
+        protected readonly Window window;
+
+        public Page() : base()
+        {
+        }
 
         public Page(Window window, SqlConnection sqlConnection) : this(window, null, sqlConnection)
         {
         }
 
-        public Page(Window window, Page previousPage, SqlConnection sqlConnection)
+        public Page(Window window, Page previousPage, SqlConnection sqlConnection) : this()
         {
             this.window = window;
 
