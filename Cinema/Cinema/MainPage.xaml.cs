@@ -114,7 +114,12 @@ namespace Cinema
         {
             speechSynthesizer.Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
         }
-        
+
+        private void SpeakHelp()
+        {
+            speechSynthesizer.Speak("Aby kupić bilet powiedz ZAMÓW BILET. Aby wyszukać film powiedz WYSZUKIWARKA FILMÓW. Aby wyjść powiedz ZAKOŃCZ.");
+        }
+
         private void SpeakRepeat()
         {
             speechSynthesizer.Speak("Powtórz proszę.");
@@ -146,6 +151,7 @@ namespace Cinema
                 switch (command)
                 {
                     case "help":
+                        SpeakHelp();
                         break;
                     case "order":
                         Dispatch(MoveToOrderPage);
