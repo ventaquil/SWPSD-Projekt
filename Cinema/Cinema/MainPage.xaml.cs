@@ -3,6 +3,7 @@ using Microsoft.Speech.Recognition.SrgsGrammar;
 using Microsoft.Speech.Synthesis;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
@@ -33,13 +34,19 @@ namespace Cinema
         {
             InitializeComponent();
 
-            InitializeSpeechSynthesis();
+            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            backgroundWorker.DoWork += InitializeSpeech;
+            backgroundWorker.RunWorkerAsync();
+        }
 
-            SpeakHello();
-
-            InitializeSpeechRecognition();
-
-            EnableSpeechRecognition();
+        private void Close()
+        {
+            window.Close();
+        }
+        
+        private void Dispatch(Action action)
+        {
+            Dispatcher.BeginInvoke(action);
         }
 
         public void EnableSpeechRecognition()
@@ -59,6 +66,17 @@ namespace Cinema
             SrgsDocument srgsDocument = new SrgsDocument("./Resources/MainPage.srgs");
 
             return new Grammar(srgsDocument);
+        }
+
+        private void InitializeSpeech(object sender, DoWorkEventArgs e)
+        {
+            InitializeSpeechSynthesis();
+
+            SpeakHello();
+
+            InitializeSpeechRecognition();
+
+            EnableSpeechRecognition();
         }
 
         public void InitializeSpeechRecognition()
@@ -125,14 +143,14 @@ namespace Cinema
                     case "help":
                         break;
                     case "order":
-                        MoveToOrderPage();
+                        Dispatch(MoveToOrderPage);
                         break;
                     case "search":
-                        MoveToSearchPage();
+                        Dispatch(MoveToSearchPage);
                         break;
                     case "quit":
                         SpeakQuit();
-                        window.Close();
+                        Dispatch(Close);
                         break;
                 }
             }
