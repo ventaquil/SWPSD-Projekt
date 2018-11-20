@@ -33,13 +33,13 @@ namespace Cinema
         {
             InitializeComponent();
 
-            InitializeSpeechRecognition();
-
-            EnableSpeechRecognition();
-
             InitializeSpeechSynthesis();
 
             SpeakHello();
+
+            InitializeSpeechRecognition();
+
+            EnableSpeechRecognition();
         }
 
         public void EnableSpeechRecognition()
@@ -94,7 +94,7 @@ namespace Cinema
 
         private void SpeakHello()
         {
-            speechSynthesizer.SpeakAsync("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
+            speechSynthesizer.Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
