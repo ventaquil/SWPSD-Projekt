@@ -97,6 +97,11 @@ namespace Cinema
             speechSynthesizer.Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
         }
 
+        private void SpeakQuit()
+        {
+            speechSynthesizer.Speak("Zapraszam ponownie");
+        }
+
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             MoveToSearchPage();
@@ -126,6 +131,7 @@ namespace Cinema
                         MoveToSearchPage();
                         break;
                     case "quit":
+                        SpeakQuit();
                         window.Close();
                         break;
                 }
