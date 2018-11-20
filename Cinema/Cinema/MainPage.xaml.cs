@@ -43,7 +43,7 @@ namespace Cinema
         {
             window.Close();
         }
-        
+
         private void Dispatch(Action action)
         {
             Dispatcher.BeginInvoke(action);
@@ -57,7 +57,9 @@ namespace Cinema
             }
             catch (InvalidOperationException)
             {
-                // pass
+            }
+            catch (NullReferenceException)
+            {
             }
         }
 
@@ -110,24 +112,33 @@ namespace Cinema
             MoveToOrderPage();
         }
 
+        private void Speak(String message)
+        {
+            StopSpeechRecognition();
+
+            speechSynthesizer.Speak(message);
+
+            EnableSpeechRecognition();
+        }
+
         private void SpeakHello()
         {
-            speechSynthesizer.Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
+            Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
         }
 
         private void SpeakHelp()
         {
-            speechSynthesizer.Speak("Aby kupić bilet powiedz ZAMÓW BILET. Aby wyszukać film powiedz WYSZUKIWARKA FILMÓW. Aby wyjść powiedz ZAKOŃCZ.");
+            Speak("Aby kupić bilet powiedz ZAMÓW BILET. Aby wyszukać film powiedz WYSZUKIWARKA FILMÓW. Aby wyjść powiedz ZAKOŃCZ.");
         }
 
         private void SpeakRepeat()
         {
-            speechSynthesizer.Speak("Powtórz proszę.");
+            Speak("Powtórz proszę.");
         }
 
         private void SpeakQuit()
         {
-            speechSynthesizer.Speak("Zapraszam ponownie.");
+            Speak("Zapraszam ponownie.");
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -169,12 +180,30 @@ namespace Cinema
 
         public void StopSpeechRecognition()
         {
-            speechRecognitionEngine.RecognizeAsyncCancel();
+            try
+            {
+                speechRecognitionEngine.RecognizeAsyncCancel();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
         }
 
         public void WaitForSpeechRecognition()
         {
-            speechRecognitionEngine.RecognizeAsyncStop();
+            try
+            {
+                speechRecognitionEngine.RecognizeAsyncStop();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
         }
     }
 }
