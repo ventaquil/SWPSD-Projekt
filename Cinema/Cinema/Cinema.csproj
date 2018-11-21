@@ -118,6 +118,7 @@
     <Compile Include="SeatButton.xaml.cs">
       <DependentUpon>SeatButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SpeechPage.cs" />
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>

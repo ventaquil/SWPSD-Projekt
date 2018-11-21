@@ -24,78 +24,20 @@ namespace Cinema
     /// <summary>
     /// Interaction logic for MainPage.xaml
     /// </summary>
-    public partial class MainPage : Page, ISpeechRecognize, ISpeechSynthesis
+    public partial class MainPage : SpeechPage
     {
-        private SpeechRecognitionEngine speechRecognitionEngine;
-
-        private SpeechSynthesizer speechSynthesizer;
-
         public MainPage(Window window, SqlConnection sqlConnection) : base(window, sqlConnection)
         {
-            InitializeComponent();
-
-            BackgroundWorker backgroundWorker = new BackgroundWorker();
-            backgroundWorker.DoWork += InitializeSpeech;
-            backgroundWorker.RunWorkerAsync();
+            InitializeComponent();            
         }
 
-        private void Close()
+        public override void InitializeSpeech(object sender, DoWorkEventArgs e)
         {
-            window.Close();
-        }
-
-        private void Dispatch(Action action)
-        {
-            Dispatcher.BeginInvoke(action);
-        }
-
-        public void EnableSpeechRecognition()
-        {
-            try
-            {
-                speechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
-        }
-
-        public Grammar GetSpeechGrammar()
-        {
-            SrgsDocument srgsDocument = new SrgsDocument("./Resources/MainPage.srgs");
-
-            return new Grammar(srgsDocument);
-        }
-
-        private void InitializeSpeech(object sender, DoWorkEventArgs e)
-        {
-            InitializeSpeechSynthesis();
+            base.InitializeSpeech(sender, e);
 
             SpeakHello();
-
-            InitializeSpeechRecognition();
-
-            EnableSpeechRecognition();
         }
 
-        public void InitializeSpeechRecognition()
-        {
-            CultureInfo cultureInfo = new CultureInfo("pl-PL");
-
-            speechRecognitionEngine = new SpeechRecognitionEngine(cultureInfo);
-            speechRecognitionEngine.LoadGrammarAsync(GetSpeechGrammar());
-            speechRecognitionEngine.SetInputToDefaultAudioDevice();
-            speechRecognitionEngine.SpeechRecognized += SpeechRecognitionEngine_SpeechRecognized;
-        }
-
-        public void InitializeSpeechSynthesis()
-        {
-            speechSynthesizer = new SpeechSynthesizer();
-            speechSynthesizer.SetOutputToDefaultAudioDevice();
-        }
 
         private void MoveToOrderPage()
         {
@@ -111,16 +53,7 @@ namespace Cinema
         {
             MoveToOrderPage();
         }
-
-        public void Speak(String message)
-        {
-            StopSpeechRecognition();
-
-            speechSynthesizer.Speak(message);
-
-            EnableSpeechRecognition();
-        }
-
+        
         private void SpeakHello()
         {
             Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
@@ -146,11 +79,11 @@ namespace Cinema
             MoveToSearchPage();
         }
 
-        private void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
+            base.SpeechRecognitionEngine_SpeechRecognized(sender, e);
+            
             RecognitionResult result = e.Result;
-
-            Console.WriteLine(result.Semantics.Value + ") " + result.Text + " (" + result.Confidence + ")");
 
             if (result.Confidence < 0.6)
             {
@@ -175,34 +108,6 @@ namespace Cinema
                         Dispatch(Close);
                         break;
                 }
-            }
-        }
-
-        public void StopSpeechRecognition()
-        {
-            try
-            {
-                speechRecognitionEngine.RecognizeAsyncCancel();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
-        }
-
-        public void WaitForSpeechRecognition()
-        {
-            try
-            {
-                speechRecognitionEngine.RecognizeAsyncStop();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (NullReferenceException)
-            {
             }
         }
     }
