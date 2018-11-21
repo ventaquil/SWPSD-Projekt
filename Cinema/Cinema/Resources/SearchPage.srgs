@@ -11,12 +11,15 @@
         <tag>help</tag>
       </item>
       <item>
+        <ruleref uri="#search" />
+      </item>
+      <item>
         <ruleref uri="#quit" />
         <tag>quit</tag>
       </item>
     </one-of>
   </rule>
-  
+
   <rule id="back">
     <one-of>
       <item>Cofnij</item>
@@ -27,6 +30,44 @@
 
   <rule id="help">
     <item>Pomoc</item>
+  </rule>
+
+  <rule id="search">
+    <one-of>
+      <item>
+        <one-of>
+          <item>Pokaż</item>
+          <item>Wyszukaj</item>
+          <item>Wyświetl</item>
+          <item>Znajdź</item>
+        </one-of>
+        <one-of>
+          <item>
+            <item>wszystkie</item>
+            <tag>search.all</tag>
+          </item>
+          <item>
+            <item>najpopularniejsze</item>
+            <tag>search.popular</tag>
+          </item>
+        </one-of>
+        <item repeat="0-1">filmy</item>
+      </item>
+      <item>
+        <item>Szukaj</item>
+        <one-of>
+          <item>
+            <item>wszystkich</item>
+            <tag>search.all</tag>
+          </item>
+          <item>
+            <item>najpopularniejszych</item>
+            <tag>search.popular</tag>
+          </item>
+        </one-of>
+        <item repeat="0-1">filmów</item>
+      </item>
+    </one-of>
   </rule>
 
   <rule id="quit">
