@@ -24,7 +24,7 @@ namespace Cinema
         private List<float> prices;
         private int rowNo, screeningId, seatNo;
 
-        public TicketDataPage(Window window, Page previousPage, SqlConnection sqlConnection, int screeningId, int rowNo, int seatNo) : base(window, previousPage, sqlConnection)
+        public TicketDataPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int rowNo, int seatNo) : base(window, previousPage, sqlConnectionFactory)
         {
             this.screeningId = screeningId;
             this.rowNo = rowNo;
@@ -37,24 +37,27 @@ namespace Cinema
 
         private void InitComboBox()
         {
-            sqlConnection.Open();
-
-            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
             {
-                sqlCommand.CommandText = "select priceDescription, price from Prices";
+                sqlConnection.Open();
 
-                prices = new List<float>();
-
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                while (sqlDataReader.Read())
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    PriceComboBox.Items.Add(String.Format("{0} ({1} zł)", sqlDataReader[0], sqlDataReader[1]));
-                    prices.Add(float.Parse(String.Format("{0}", sqlDataReader[1])));
-                }
-                sqlDataReader.Close();
-            }
+                    sqlCommand.CommandText = "select priceDescription, price from Prices";
 
-            sqlConnection.Close();
+                    prices = new List<float>();
+
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    while (sqlDataReader.Read())
+                    {
+                        PriceComboBox.Items.Add(String.Format("{0} ({1} zł)", sqlDataReader[0], sqlDataReader[1]));
+                        prices.Add(float.Parse(String.Format("{0}", sqlDataReader[1])));
+                    }
+                    sqlDataReader.Close();
+                }
+
+                sqlConnection.Close();
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -70,35 +73,38 @@ namespace Cinema
                 int seatId = GetSeatId();
                 string bookerName = String.Format("{0}", NameTextBox.Text);
 
-                ChangePage(new SummaryPage(window, this, sqlConnection, screeningId, seatId, PriceComboBox.SelectedIndex + 1, price, bookerName));
+                ChangePage(new SummaryPage(window, this, sqlConnectionFactory, screeningId, seatId, PriceComboBox.SelectedIndex + 1, price, bookerName));
             }
         }
 
         private int GetSeatId()
         {
-            int seatId;
-
-            sqlConnection.Open();
-
-            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
             {
-                sqlCommand.CommandText = "select Seats.id " +
-                    "from Seats, Screenings, Auditoriums " +
-                    "where Auditoriums.id = Seats.auditoriumID and " +
-                    "Screenings.auditoriumID = Auditoriums.id and " +
-                    "Seats.rowNo = " + rowNo +
-                    " and Seats.seatNo = " + seatNo +
-                    " and Screenings.id = " + screeningId;
+                int seatId;
 
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                sqlDataReader.Read();
-                seatId = int.Parse(String.Format("{0}", sqlDataReader[0]));
-                sqlDataReader.Close();
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                {
+                    sqlCommand.CommandText = "select Seats.id " +
+                        "from Seats, Screenings, Auditoriums " +
+                        "where Auditoriums.id = Seats.auditoriumID and " +
+                        "Screenings.auditoriumID = Auditoriums.id and " +
+                        "Seats.rowNo = " + rowNo +
+                        " and Seats.seatNo = " + seatNo +
+                        " and Screenings.id = " + screeningId;
+
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlDataReader.Read();
+                    seatId = int.Parse(String.Format("{0}", sqlDataReader[0]));
+                    sqlDataReader.Close();
+                }
+
+                sqlConnection.Close();
+
+                return seatId;
             }
-
-            sqlConnection.Close();
-
-            return seatId;
         }
     }
 }

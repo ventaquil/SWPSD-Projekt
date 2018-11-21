@@ -20,7 +20,7 @@ namespace Cinema
     /// </summary>
     public partial class OrderPage : Page
     {
-        public OrderPage(Window window, Page previousPage, SqlConnection sqlConnection) : base(window, previousPage, sqlConnection)
+        public OrderPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
 
@@ -29,24 +29,27 @@ namespace Cinema
 
         private void ListMovies()
         {
-            sqlConnection.Open();
-
-            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
             {
-                sqlCommand.CommandText = "select distinct Movies.title " +
-                    "from Movies, Screenings " +
-                    "where Movies.id = Screenings.movieID " +
-                    "and Screenings.screeningDate = CONVERT(date,  GETDATE())";
+                sqlConnection.Open();
 
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                while (sqlDataReader.Read())
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    MoviesListBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
-                }
-                sqlDataReader.Close();
-            }
+                    sqlCommand.CommandText = "select distinct Movies.title " +
+                        "from Movies, Screenings " +
+                        "where Movies.id = Screenings.movieID " +
+                        "and Screenings.screeningDate = CONVERT(date,  GETDATE())";
 
-            sqlConnection.Close();
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    while (sqlDataReader.Read())
+                    {
+                        MoviesListBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
+                    }
+                    sqlDataReader.Close();
+                }
+
+                sqlConnection.Close();
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -58,7 +61,7 @@ namespace Cinema
         {
             if (!String.Format("{0}", MoviesListBox.SelectedItem).Equals(""))
             {
-                ChangePage(new MovieHoursPage(window, this, sqlConnection, String.Format("{0}", MoviesListBox.SelectedItem)));
+                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, String.Format("{0}", MoviesListBox.SelectedItem)));
             }
         }
     }

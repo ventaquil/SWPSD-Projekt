@@ -23,6 +23,16 @@ namespace Cinema
     /// </summary>
     public partial class SearchPage : SpeechPage
     {
+        public class Genre
+        {
+            public readonly String Name;
+
+            public Genre(String name)
+            {
+                Name = name;
+            }
+        };
+
         private static string[] categories =
         {
             "Wszystkie",
@@ -30,11 +40,49 @@ namespace Cinema
             "Najpopularniejsze"
         };
 
-        public SearchPage(Window window, Page previousPage, SqlConnection sqlConnection) : base(window, previousPage, sqlConnection)
+        private Genre[] Genres;
+
+        public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
 
             InitComboBoxes();
+        }
+
+        public Genre[] GetGenres()
+        {
+            if (Genres == null)
+            {
+                List<Genre> genres = new List<Genre>();
+
+                using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
+                {
+                    //Dispatch(new Action(() =>
+                    //{
+                    sqlConnection.Open();
+
+                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                    {
+                        sqlCommand.CommandText = "select genre from Genres";
+
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        while (sqlDataReader.Read())
+                        {
+                            string name = string.Format("{0}", sqlDataReader[0]);
+
+                            genres.Add(new Genre(name));
+                        }
+                        sqlDataReader.Close();
+                    }
+
+                    sqlConnection.Close();
+                    //}));
+                }
+
+                Genres = genres.ToArray();
+            }
+
+            return Genres;
         }
 
         public override void InitializeSpeech(object sender, DoWorkEventArgs e)
@@ -100,21 +148,10 @@ namespace Cinema
                 CategoryComboBox.Items.Add(category);
             }
 
-            sqlConnection.Open();
-
-            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            foreach (Genre genre in GetGenres())
             {
-                sqlCommand.CommandText = "select genre from Genres";
-
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                while (sqlDataReader.Read())
-                {
-                    GenreComboBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
-                }
-                sqlDataReader.Close();
+                GenreComboBox.Items.Add(genre.Name);
             }
-
-            sqlConnection.Close();
 
             CategoryComboBox.DropDownClosed += CategoryComboBox_DropDownClosed;
         }
@@ -133,38 +170,41 @@ namespace Cinema
 
             if (CategoryComboBox.SelectedItem != null)
             {
-                sqlConnection.Open();
-
-                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
                 {
-                    if (CategoryComboBox.SelectedItem.Equals("Wszystkie"))
-                    {
-                        sqlCommand.CommandText = "select distinct Movies.title " +
-                            "from Movies, Screenings " +
-                            "where Movies.id = Screenings.movieID and " +
-                            "Screenings.screeningDate = CONVERT(date,  GETDATE())";
-                    }
-                    else if (CategoryComboBox.SelectedItem.Equals("Gatunek") && (GenreComboBox.SelectedItem != null))
-                    {
-                        sqlCommand.CommandText = "execute procedure_GetMoviesByGenre " + String.Format("'{0}'", GenreComboBox.SelectedItem);
-                    }
-                    else if (CategoryComboBox.SelectedItem.Equals("Najpopularniejsze"))
-                    {
-                        sqlCommand.CommandText = "execute procedure_MostPopularMovies";
-                    }
+                    sqlConnection.Open();
 
-                    if (sqlCommand.CommandText.Length > 0)
+                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                        while (sqlDataReader.Read())
+                        if (CategoryComboBox.SelectedItem.Equals("Wszystkie"))
                         {
-                            ResultsListBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
+                            sqlCommand.CommandText = "select distinct Movies.title " +
+                                "from Movies, Screenings " +
+                                "where Movies.id = Screenings.movieID and " +
+                                "Screenings.screeningDate = CONVERT(date,  GETDATE())";
                         }
-                        sqlDataReader.Close();
-                    }
-                }
+                        else if (CategoryComboBox.SelectedItem.Equals("Gatunek") && (GenreComboBox.SelectedItem != null))
+                        {
+                            sqlCommand.CommandText = "execute procedure_GetMoviesByGenre " + String.Format("'{0}'", GenreComboBox.SelectedItem);
+                        }
+                        else if (CategoryComboBox.SelectedItem.Equals("Najpopularniejsze"))
+                        {
+                            sqlCommand.CommandText = "execute procedure_MostPopularMovies";
+                        }
 
-                sqlConnection.Close();
+                        if (sqlCommand.CommandText.Length > 0)
+                        {
+                            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                            while (sqlDataReader.Read())
+                            {
+                                ResultsListBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
+                            }
+                            sqlDataReader.Close();
+                        }
+                    }
+
+                    sqlConnection.Close();
+                }
             }
         }
 
@@ -177,7 +217,7 @@ namespace Cinema
         {
             if (String.Format("{0}", ResultsListBox.SelectedItem).Length > 0)
             {
-                new DescriptionWindow(window, this, sqlConnection, String.Format("{0}", ResultsListBox.SelectedItem)).Show();
+                new DescriptionWindow(window, this, sqlConnectionFactory, String.Format("{0}", ResultsListBox.SelectedItem)).Show();
             }
         }
     }

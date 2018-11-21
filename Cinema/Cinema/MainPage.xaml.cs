@@ -26,7 +26,7 @@ namespace Cinema
     /// </summary>
     public partial class MainPage : SpeechPage
     {
-        public MainPage(Window window, SqlConnection sqlConnection) : base(window, sqlConnection)
+        public MainPage(Window window, SqlConnectionFactory sqlConnectionFactory) : base(window, sqlConnectionFactory)
         {
             InitializeComponent();
         }
@@ -40,12 +40,12 @@ namespace Cinema
 
         private void MoveToOrderPage()
         {
-            ChangePage(new OrderPage(window, this, sqlConnection));
+            ChangePage(new OrderPage(window, this, sqlConnectionFactory));
         }
 
         private void MoveToSearchPage()
         {
-            ChangePage(new SearchPage(window, this, sqlConnection));
+            ChangePage(new SearchPage(window, this, sqlConnectionFactory));
         }
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)

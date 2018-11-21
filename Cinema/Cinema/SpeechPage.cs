@@ -23,11 +23,11 @@ namespace Cinema
         {
         }
 
-        public SpeechPage(Window window, SqlConnection sqlConnection) : this(window, null, sqlConnection)
+        public SpeechPage(Window window, SqlConnectionFactory sqlConnectionFactory) : this(window, null, sqlConnectionFactory)
         {
         }
 
-        public SpeechPage(Window window, Page previousPage, SqlConnection sqlConnection) : base(window, previousPage, sqlConnection)
+        public SpeechPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             ExecuteBackgroundAction(InitializeSpeech);
         }

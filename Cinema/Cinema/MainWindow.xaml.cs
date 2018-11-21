@@ -22,55 +22,57 @@ namespace Cinema
     /// </summary>
     public partial class MainWindow : Window
     {
-        private String databasePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "CinemaDatabase.mdf");
+        private static string DatabasePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "CinemaDatabase.mdf");
+
+        private static string ConnectionString = "Data Source=(localDB)\\MSSQLLocalDB; AttachDbFilename=" + DatabasePath;
 
         public MainWindow()
         {
             InitializeComponent();
 
             // Create database if not exists
-            if (!File.Exists(databasePath))
+            if (!File.Exists(DatabasePath))
             {
                 CreateSqlDatabase();
 
                 ExecuteCreateQueries();
             }
-
-            Content = new MainPage(this, CreateSqlConnection());
+            
+            Content = new MainPage(this, CreateSqlConnectionFactory());
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
-        public SqlConnection CreateSqlConnection()
+        public SqlConnectionFactory CreateSqlConnectionFactory()
         {
-            return new SqlConnection
-            {
-                ConnectionString = "Data Source=(localDB)\\MSSQLLocalDB; AttachDbFilename=" + databasePath
-            };
+            return new SqlConnectionFactory(ConnectionString); 
         }
 
         public void CreateSqlDatabase()
         {
-            string databaseName = System.IO.Path.GetFileNameWithoutExtension(databasePath);
+            string databaseName = System.IO.Path.GetFileNameWithoutExtension(DatabasePath);
 
-            using (SqlConnection connection = new SqlConnection("Data Source=(localDB)\\MSSQLLocalDB"))
+            using (SqlConnection sqlConnection = new SqlConnection("Data Source=(localDB)\\MSSQLLocalDB"))
             {
-                connection.Open();
-                using (SqlCommand sqlCommand = connection.CreateCommand())
+                sqlConnection.Open();
+
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    sqlCommand.CommandText = String.Format("CREATE DATABASE {0} ON PRIMARY (NAME={0}, FILENAME='{1}')", databaseName, databasePath);
+                    sqlCommand.CommandText = String.Format("CREATE DATABASE {0} ON PRIMARY (NAME={0}, FILENAME='{1}')", databaseName, DatabasePath);
                     sqlCommand.ExecuteNonQuery();
 
                     sqlCommand.CommandText = String.Format("EXEC sp_detach_db '{0}', 'true'", databaseName);
                     sqlCommand.ExecuteNonQuery();
                 }
+
+                sqlConnection.Close();
             }
         }
 
         public void ExecuteCreateQueries()
         {
 
-            using (SqlConnection sqlConnection = CreateSqlConnection())
+            using (SqlConnection sqlConnection = CreateSqlConnectionFactory().Create())
             {
                 try
                 {
