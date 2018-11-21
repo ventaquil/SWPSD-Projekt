@@ -23,18 +23,27 @@ namespace Cinema
         {
         }
 
-        public SpeechPage(Window window, SqlConnection sqlConnection) : this(window, null, sqlConnection)
+        public SpeechPage(Window window, SqlConnectionFactory sqlConnectionFactory) : this(window, null, sqlConnectionFactory)
         {
         }
 
-        public SpeechPage(Window window, Page previousPage, SqlConnection sqlConnection) : base(window, previousPage, sqlConnection)
+        public SpeechPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             ExecuteBackgroundAction(InitializeSpeech);
         }
 
-        protected void Dispatch(Action action)
+        protected virtual void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
+        {
+        }
+
+        protected void DispatchAsync(Action action)
         {
             Dispatcher.BeginInvoke(action);
+        }
+
+        protected void DispatchSync(Action action)
+        {
+            Dispatcher.Invoke(action);
         }
 
         public void EnableSpeechRecognition()
@@ -61,6 +70,8 @@ namespace Cinema
         public Grammar GetSpeechGrammar()
         {
             SrgsDocument srgsDocument = new SrgsDocument("./Resources/" + GetType().Name + ".srgs");
+
+            AddCustomSpeechGrammarRules(srgsDocument.Rules);
 
             return new Grammar(srgsDocument);
         }
@@ -94,16 +105,27 @@ namespace Cinema
         {
             StopSpeechRecognition();
 
-            speechSynthesizer.Speak(message);
+            try
+            {
+                speechSynthesizer.Speak(message);
 
-            EnableSpeechRecognition();
+                EnableSpeechRecognition();
+            }
+            catch (OperationCanceledException)
+            {
+            }
         }
 
         protected virtual void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             RecognitionResult result = e.Result;
 
-            Console.WriteLine("[" + result.Semantics.Value + "] " + result.Text + " (" + result.Confidence + ")");
+            Console.WriteLine(GetType().Name + "[" + result.Semantics.Value + "] " + result.Text + " (" + result.Confidence + ")");
+        }
+
+        public void StopSpeak()
+        {
+            speechSynthesizer.SpeakAsyncCancelAll();
         }
 
         public void StopSpeechRecognition()

@@ -119,6 +119,7 @@
       <DependentUpon>SeatButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="SpeechPage.cs" />
+    <Compile Include="SqlConnectionFactory.cs" />
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
@@ -213,6 +214,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Resources\MainPage.srgs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SearchPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

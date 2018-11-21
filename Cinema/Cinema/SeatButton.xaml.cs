@@ -23,15 +23,15 @@ namespace Cinema
     {
         private Page lastPage;
         private int rowNo, screeningId, seatNo;
-        private SqlConnection sqlConnection;
+        private SqlConnectionFactory sqlConnectionFactory;
         private bool taken;
         private Window window;
 
-        public SeatButton(Window window, Page lastPage, SqlConnection sqlConnection, int screeningId, int rowNo, int seatNo)
+        public SeatButton(Window window, Page lastPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int rowNo, int seatNo)
         {
             this.window = window;
             this.lastPage = lastPage;
-            this.sqlConnection = sqlConnection;
+            this.sqlConnectionFactory = sqlConnectionFactory;
             this.screeningId = screeningId;
             this.rowNo = rowNo;
             this.seatNo = seatNo;
@@ -45,27 +45,30 @@ namespace Cinema
 
         private void CheckIfTaken()
         {
-            sqlConnection.Open();
-
-            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
             {
-                sqlCommand.CommandText = "select count(Tickets.id) " +
-                    "from Tickets, Screenings, Seats " +
-                    "where Tickets.seatID = Seats.id and " +
-                    "Tickets.screeningID = Screenings.id and " +
-                    "Screenings.id = " + screeningId +
-                    "and Seats.rowNo = " + rowNo +
-                    "and Seats.seatNo = " + seatNo;
+                sqlConnection.Open();
 
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                sqlDataReader.Read();
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                {
+                    sqlCommand.CommandText = "select count(Tickets.id) " +
+                        "from Tickets, Screenings, Seats " +
+                        "where Tickets.seatID = Seats.id and " +
+                        "Tickets.screeningID = Screenings.id and " +
+                        "Screenings.id = " + screeningId +
+                        "and Seats.rowNo = " + rowNo +
+                        "and Seats.seatNo = " + seatNo;
 
-                taken = (int.Parse(String.Format("{0}", sqlDataReader[0])) > 0);
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    sqlDataReader.Read();
 
-                sqlDataReader.Close();
+                    taken = (int.Parse(String.Format("{0}", sqlDataReader[0])) > 0);
+
+                    sqlDataReader.Close();
+                }
+
+                sqlConnection.Close();
             }
-
-            sqlConnection.Close();
         }
 
         private void InitSeatButton()
@@ -83,7 +86,7 @@ namespace Cinema
             }
             else
             {
-                window.Content = new TicketDataPage(window, lastPage, sqlConnection, screeningId, rowNo, seatNo);
+                window.Content = new TicketDataPage(window, lastPage, sqlConnectionFactory, screeningId, rowNo, seatNo);
             }
         }
     }

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<grammar version="1.0" xml:lang="pl-PL" root="root" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0-literals">
+  <rule id="root" scope="public">
+    <one-of>
+      <item>
+        <ruleref uri="#back" />
+        <tag>back</tag>
+      </item>
+      <item>
+        <ruleref uri="#genres" />
+        <tag>genres</tag>
+      </item>
+      <item>
+        <ruleref uri="#help" />
+        <tag>help</tag>
+      </item>
+      <item>
+        <ruleref uri="#search" />
+      </item>
+      <item>
+        <ruleref uri="#quit" />
+        <tag>quit</tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <rule id="back">
+    <one-of>
+      <item>Cofnij</item>
+      <item>Wróć</item>
+      <item>Powróć</item>
+    </one-of>
+  </rule>
+
+  <rule id="genres">
+    <item>
+      <one-of>
+        <item>Pokaż</item>
+        <item>Wyświetl</item>
+      </one-of>
+      <item repeat="0-1">dostępne</item>
+      <item>gatunki</item>
+    </item>
+  </rule>
+
+  <rule id="help">
+    <item>Pomoc</item>
+  </rule>
+
+  <rule id="search">
+    <one-of>
+      <item>
+        <one-of>
+          <item>Pokaż</item>
+          <item>Wyszukaj</item>
+          <item>Wyświetl</item>
+          <item>Znajdź</item>
+        </one-of>
+        <one-of>
+          <item>
+            <item>wszystkie</item>
+            <tag>search.all</tag>
+          </item>
+          <item>
+            <item>najpopularniejsze</item>
+            <tag>search.popular</tag>
+          </item>
+        </one-of>
+        <item repeat="0-1">filmy</item>
+      </item>
+      <item>
+        <item>Szukaj</item>
+        <one-of>
+          <item>
+            <item>wszystkich</item>
+            <tag>search.all</tag>
+          </item>
+          <item>
+            <item>najpopularniejszych</item>
+            <tag>search.popular</tag>
+          </item>
+        </one-of>
+        <item repeat="0-1">filmów</item>
+      </item>
+    </one-of>
+  </rule>
+
+  <rule id="quit">
+    <one-of>
+      <item>Wyjdź</item>
+      <item>Zakończ</item>
+      <item>Zamknij</item>
+    </one-of>
+  </rule>
+</grammar>

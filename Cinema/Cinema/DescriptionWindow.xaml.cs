@@ -22,14 +22,14 @@ namespace Cinema
     {
         private Window window;
         private Page previousPage;
-        private SqlConnection sqlConnection;
+        private SqlConnectionFactory sqlConnectionFactory;
         private string movieTitle;
 
-        public DescriptionWindow(Window window, Page previousPage, SqlConnection sqlConnection, string movieTitle)
+        public DescriptionWindow(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, string movieTitle)
         {
             this.window = window;
             this.previousPage = previousPage;
-            this.sqlConnection = sqlConnection;
+            this.sqlConnectionFactory = sqlConnectionFactory;
             this.movieTitle = movieTitle;
 
             InitializeComponent();
@@ -40,7 +40,7 @@ namespace Cinema
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
-            window.Content = new MovieHoursPage(window, previousPage, sqlConnection, movieTitle);
+            window.Content = new MovieHoursPage(window, previousPage, sqlConnectionFactory, movieTitle);
 
             Close();
         }

@@ -25,7 +25,7 @@ namespace Cinema
 
         private List<int> screeningId;
 
-        public MovieHoursPage(Window window, Page previousPage, SqlConnection sqlConnection, String movieTitle) : base(window, previousPage, sqlConnection)
+        public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, String movieTitle) : base(window, previousPage, sqlConnectionFactory)
         {
             this.movieTitle = movieTitle;
 
@@ -38,30 +38,33 @@ namespace Cinema
         {
             screeningId = new List<int>();
 
-            sqlConnection.Open();
-
-            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
             {
-                sqlCommand.CommandText = "select distinct Screenings.id, Movies.title, Screenings.auditoriumID, Screenings.screeningTime " +
-                    "from Movies, Screenings " +
-                    "where Movies.id = Screenings.movieID " +
-                    "and Movies.title = '" + movieTitle +
-                    "' and Screenings.screeningDate = CONVERT(date,  GETDATE())";
+                sqlConnection.Open();
 
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                while (sqlDataReader.Read())
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    screeningId.Add(int.Parse(String.Format("{0}", sqlDataReader[0])));
+                    sqlCommand.CommandText = "select distinct Screenings.id, Movies.title, Screenings.auditoriumID, Screenings.screeningTime " +
+                        "from Movies, Screenings " +
+                        "where Movies.id = Screenings.movieID " +
+                        "and Movies.title = '" + movieTitle +
+                        "' and Screenings.screeningDate = CONVERT(date,  GETDATE())";
 
-                    string[] hourDivided = String.Format("{0}", sqlDataReader[3]).Split(':');
-                    string hour = hourDivided[0] + ":" + hourDivided[1];
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    while (sqlDataReader.Read())
+                    {
+                        screeningId.Add(int.Parse(String.Format("{0}", sqlDataReader[0])));
 
-                    HoursListBox.Items.Add(String.Format("{0} \t sala {1} \t godzina {2}", sqlDataReader[1], sqlDataReader[2], hour));
+                        string[] hourDivided = String.Format("{0}", sqlDataReader[3]).Split(':');
+                        string hour = hourDivided[0] + ":" + hourDivided[1];
+
+                        HoursListBox.Items.Add(String.Format("{0} \t sala {1} \t godzina {2}", sqlDataReader[1], sqlDataReader[2], hour));
+                    }
+                    sqlDataReader.Close();
                 }
-                sqlDataReader.Close();
-            }
 
-            sqlConnection.Close();
+                sqlConnection.Close();
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -73,7 +76,7 @@ namespace Cinema
         {
             if (!String.Format("{0}", HoursListBox.SelectedItem).Equals(""))
             {
-                ChangePage(new MovieSeatsPage(window, this, sqlConnection, screeningId[HoursListBox.SelectedIndex]));
+                ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[HoursListBox.SelectedIndex]));
             }
         }
     }

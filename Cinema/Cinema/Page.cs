@@ -12,7 +12,7 @@ namespace Cinema
     {
         protected readonly Page previousPage;
 
-        protected readonly SqlConnection sqlConnection;
+        protected readonly SqlConnectionFactory sqlConnectionFactory;
 
         protected readonly Window window;
 
@@ -20,21 +20,28 @@ namespace Cinema
         {
         }
 
-        public Page(Window window, SqlConnection sqlConnection) : this(window, null, sqlConnection)
+        public Page(Window window, SqlConnectionFactory sqlConnectionFactory) : this(window, null, sqlConnectionFactory)
         {
         }
 
-        public Page(Window window, Page previousPage, SqlConnection sqlConnection) : this()
+        public Page(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : this()
         {
             this.window = window;
 
             this.previousPage = previousPage;
 
-            this.sqlConnection = sqlConnection;
+            this.sqlConnectionFactory = sqlConnectionFactory;
         }
 
         protected void ChangePage(Page page)
         {
+            // TODO do all tasks async
+
+            if (this is ISpeechSynthesis)
+            {
+                ((ISpeechSynthesis)this).StopSpeak();
+            }
+
             if (this is ISpeechRecognize)
             {
                 ((ISpeechRecognize)this).StopSpeechRecognition();

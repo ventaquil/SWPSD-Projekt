@@ -23,12 +23,12 @@ namespace Cinema
     {
         private int screeningId;
 
-        public MovieSeatsPage(Window window, Page previousPage, SqlConnection sqlConnection, int screeningId) : base(window, previousPage, sqlConnection)
+        public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId) : base(window, previousPage, sqlConnectionFactory)
         {
             this.screeningId = screeningId;
 
             InitializeComponent();
-            
+
             InitSeatsView();
         }
 
@@ -36,36 +36,39 @@ namespace Cinema
         {
             Dictionary<int, List<int>> auditoriumSeats = new Dictionary<int, List<int>>();
 
-            sqlConnection.Open();
-
-            using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
             {
-                sqlCommand.CommandText = "select Seats.rowNo, Seats.seatNo " +
-                    "from Seats, Auditoriums, Screenings " +
-                    "where Seats.auditoriumID = Auditoriums.id and " +
-                    "Auditoriums.id = Screenings.auditoriumID and " +
-                    "Screenings.id = " + screeningId;
+                sqlConnection.Open();
 
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                while (sqlDataReader.Read())
+                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    int rowNo = int.Parse(String.Format("{0}", sqlDataReader[0]));
-                    int seatNo = int.Parse(String.Format("{0}", sqlDataReader[1]));
+                    sqlCommand.CommandText = "select Seats.rowNo, Seats.seatNo " +
+                        "from Seats, Auditoriums, Screenings " +
+                        "where Seats.auditoriumID = Auditoriums.id and " +
+                        "Auditoriums.id = Screenings.auditoriumID and " +
+                        "Screenings.id = " + screeningId;
 
-                    try
+                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                    while (sqlDataReader.Read())
                     {
-                        auditoriumSeats[rowNo].Add(seatNo);
+                        int rowNo = int.Parse(String.Format("{0}", sqlDataReader[0]));
+                        int seatNo = int.Parse(String.Format("{0}", sqlDataReader[1]));
+
+                        try
+                        {
+                            auditoriumSeats[rowNo].Add(seatNo);
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            auditoriumSeats[rowNo] = null;
+                            auditoriumSeats[rowNo] = new List<int> { seatNo };
+                        }
                     }
-                    catch (KeyNotFoundException)
-                    {
-                        auditoriumSeats[rowNo] = null;
-                        auditoriumSeats[rowNo] = new List<int> { seatNo };
-                    }
+                    sqlDataReader.Close();
                 }
-                sqlDataReader.Close();
-            }
 
-            sqlConnection.Close();
+                sqlConnection.Close();
+            }
 
             List<RowDefinition> gridRows = new List<RowDefinition>();
             List<ColumnDefinition> gridColumns = new List<ColumnDefinition>();
@@ -85,9 +88,9 @@ namespace Cinema
             {
                 foreach (int seat in auditoriumSeats[row])
                 {
-                    SeatButton seatButton = new SeatButton(window, this, sqlConnection, screeningId, row, seat);
-                    Grid.SetRow(seatButton, row-1);
-                    Grid.SetColumn(seatButton, seat-1);
+                    SeatButton seatButton = new SeatButton(window, this, sqlConnectionFactory, screeningId, row, seat);
+                    Grid.SetRow(seatButton, row - 1);
+                    Grid.SetColumn(seatButton, seat - 1);
                     SeatsGrid.Children.Add(seatButton);
                 }
             }
