@@ -32,6 +32,10 @@ namespace Cinema
             ExecuteBackgroundAction(InitializeSpeech);
         }
 
+        protected virtual void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
+        {
+        }
+
         protected void Dispatch(Action action)
         {
             Dispatcher.BeginInvoke(action);
@@ -61,6 +65,8 @@ namespace Cinema
         public Grammar GetSpeechGrammar()
         {
             SrgsDocument srgsDocument = new SrgsDocument("./Resources/" + GetType().Name + ".srgs");
+
+            AddCustomSpeechGrammarRules(srgsDocument.Rules);
 
             return new Grammar(srgsDocument);
         }
