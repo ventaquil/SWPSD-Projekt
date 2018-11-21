@@ -158,17 +158,22 @@ namespace Cinema
             else
             {
                 string[] command = result.Semantics.Value.ToString().ToLower().Split('.');
-                switch (command.First())
+                DispatchAsync(() =>
                 {
-                    case "back":
-                        DispatchAsync(MoveBack);
-                        break;
-                    case "help":
-                        SpeakHelp();
-                        break;
-                    case "search":
-                        DispatchAsync(() =>
-                        {
+                    switch (command.First())
+                    {
+                        case "back":
+                            MoveBack();
+                            break;
+                        case "genre":
+                            CategoryComboBox.SelectedIndex = 1;
+                            GenreComboBox.SelectedIndex = int.Parse(command.Skip(1).First());
+                            Search();
+                            break;
+                        case "help":
+                            SpeakHelp();
+                            break;
+                        case "search":
                             switch (command.Skip(1).First())
                             {
                                 case "all":
@@ -180,13 +185,13 @@ namespace Cinema
                             }
 
                             Search();
-                        });
-                        break;
-                    case "quit":
-                        SpeakQuit();
-                        DispatchAsync(Close);
-                        break;
-                }
+                            break;
+                        case "quit":
+                            SpeakQuit();
+                            Close();
+                            break;
+                    }
+                });
             }
         }
 
