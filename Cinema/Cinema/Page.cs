@@ -35,6 +35,13 @@ namespace Cinema
 
         protected void ChangePage(Page page)
         {
+            // TODO do all tasks async
+
+            if (this is ISpeechSynthesis)
+            {
+                ((ISpeechSynthesis)this).StopSpeak();
+            }
+
             if (this is ISpeechRecognize)
             {
                 ((ISpeechRecognize)this).StopSpeechRecognition();

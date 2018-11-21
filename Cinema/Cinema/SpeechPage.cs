@@ -94,16 +94,27 @@ namespace Cinema
         {
             StopSpeechRecognition();
 
-            speechSynthesizer.Speak(message);
+            try
+            {
+                speechSynthesizer.Speak(message);
 
-            EnableSpeechRecognition();
+                EnableSpeechRecognition();
+            }
+            catch (OperationCanceledException)
+            {
+            }
         }
 
         protected virtual void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             RecognitionResult result = e.Result;
 
-            Console.WriteLine("[" + result.Semantics.Value + "] " + result.Text + " (" + result.Confidence + ")");
+            Console.WriteLine(GetType().Name + "[" + result.Semantics.Value + "] " + result.Text + " (" + result.Confidence + ")");
+        }
+
+        public void StopSpeak()
+        {
+            speechSynthesizer.SpeakAsyncCancelAll();
         }
 
         public void StopSpeechRecognition()
