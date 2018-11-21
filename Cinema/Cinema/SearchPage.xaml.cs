@@ -121,14 +121,30 @@ namespace Cinema
             }
             else
             {
-                string command = result.Semantics.Value.ToString().ToLower();
-                switch (command)
+                string[] command = result.Semantics.Value.ToString().ToLower().Split('.');
+                switch (command.First())
                 {
                     case "back":
                         DispatchAsync(MoveBack);
                         break;
                     case "help":
                         SpeakHelp();
+                        break;
+                    case "search":
+                        DispatchAsync(() =>
+                        {
+                            switch (command.Skip(1).First())
+                            {
+                                case "all":
+                                    CategoryComboBox.SelectedIndex = 0;
+                                    break;
+                                case "popular":
+                                    CategoryComboBox.SelectedIndex = 2;
+                                    break;
+                            }
+
+                            Search();
+                        });
                         break;
                     case "quit":
                         SpeakQuit();
@@ -162,6 +178,11 @@ namespace Cinema
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            Search();
+        }
+
+        private void Search()
         {
             ResultsListBox.Items.Clear();
 
