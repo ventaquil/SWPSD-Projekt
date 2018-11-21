@@ -48,6 +48,11 @@ namespace Cinema
             }
         }
 
+        protected void Close()
+        {
+            window.Close();
+        }
+
         protected void MoveBack()
         {
             ChangePage(previousPage);

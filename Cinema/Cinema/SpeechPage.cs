@@ -32,11 +32,6 @@ namespace Cinema
             ExecuteBackgroundAction(InitializeSpeech);
         }
 
-        public void Close()
-        {
-            window.Close();
-        }
-
         protected void Dispatch(Action action)
         {
             Dispatcher.BeginInvoke(action);
