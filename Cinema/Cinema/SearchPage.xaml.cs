@@ -1,4 +1,5 @@
 ﻿using Microsoft.Speech.Recognition;
+using Microsoft.Speech.Recognition.SrgsGrammar;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -80,6 +81,41 @@ namespace Cinema
             }
 
             return Genres;
+        }
+
+        protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
+        {
+            SrgsRule genreSrgsRule;
+
+            {
+                SrgsOneOf genreSrgsOneOf = new SrgsOneOf();
+
+                int i = 0;
+                foreach (Genre genre in GetGenres())
+                {
+                    SrgsItem srgsItem = new SrgsItem(genre.Name);
+                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"genre." + i++ + "\";"));
+
+                    genreSrgsOneOf.Add(srgsItem);
+                }
+
+                SrgsItem phraseSrgsItem = new SrgsItem();
+                phraseSrgsItem.Add(new SrgsItem("Wybierz gatunek"));
+                phraseSrgsItem.Add(genreSrgsOneOf);
+
+                genreSrgsRule = new SrgsRule("genre", phraseSrgsItem);
+            }
+
+            rules.Add(genreSrgsRule);
+
+            {
+                SrgsItem srgsItem = new SrgsItem();
+                srgsItem.Add(new SrgsRuleRef(genreSrgsRule));
+
+                SrgsRule rootSrgsRule = rules.Where(rule => rule.Id == "root").First();
+                SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
+                srgsOneOf.Add(srgsItem);
+            }
         }
 
         public override void InitializeSpeech(object sender, DoWorkEventArgs e)
