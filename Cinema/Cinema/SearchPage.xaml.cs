@@ -99,8 +99,11 @@ namespace Cinema
                     genreSrgsOneOf.Add(srgsItem);
                 }
 
+                SrgsItem genreSrgsItem = new SrgsItem("Wybierz");
+                genreSrgsItem.Add(new SrgsItem(0, 1, "gatunek"));
+
                 SrgsItem phraseSrgsItem = new SrgsItem();
-                phraseSrgsItem.Add(new SrgsItem("Wybierz gatunek"));
+                phraseSrgsItem.Add(genreSrgsItem);
                 phraseSrgsItem.Add(genreSrgsOneOf);
 
                 genreSrgsRule = new SrgsRule("genre", phraseSrgsItem);
@@ -168,7 +171,9 @@ namespace Cinema
                         case "genre":
                             CategoryComboBox.SelectedIndex = 1;
                             GenreComboBox.SelectedIndex = int.Parse(command.Skip(1).First());
+                            GenreComboBox.IsDropDownOpen = false;
                             Search();
+                            ResultsListBox.Focus();
                             break;
                         case "genres":
                             CategoryComboBox.SelectedIndex = 1;
