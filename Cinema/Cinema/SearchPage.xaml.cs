@@ -19,7 +19,7 @@ namespace Cinema
     /// <summary>
     /// Interaction logic for SearchPage.xaml
     /// </summary>
-    public partial class SearchPage : Page
+    public partial class SearchPage : SpeechPage
     {
         private static string[] categories =
         {
