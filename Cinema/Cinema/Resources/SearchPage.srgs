@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<grammar version="1.0" xml:lang="pl-PL" root="root" xmlns="http://www.w3.org/2001/06/grammar" tag-format="semantics/1.0-literals">
+  <rule id="root" scope="public">
+    <one-of>
+      <item>
+        <ruleref uri="#back" />
+        <tag>back</tag>
+      </item>
+      <item>
+        <ruleref uri="#help" />
+        <tag>help</tag>
+      </item>
+      <item>
+        <ruleref uri="#quit" />
+        <tag>quit</tag>
+      </item>
+    </one-of>
+  </rule>
+  
+  <rule id="back">
+    <one-of>
+      <item>Cofnij</item>
+      <item>Wróć</item>
+      <item>Powróć</item>
+    </one-of>
+  </rule>
+
+  <rule id="help">
+    <item>Pomoc</item>
+  </rule>
+
+  <rule id="quit">
+    <one-of>
+      <item>Wyjdź</item>
+      <item>Zakończ</item>
+      <item>Zamknij</item>
+    </one-of>
+  </rule>
+</grammar>
