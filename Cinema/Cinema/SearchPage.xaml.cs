@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Speech.Recognition;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
@@ -46,6 +47,50 @@ namespace Cinema
         private void SpeakHello()
         {
             Speak("Witaj w wyszukiwarce.");
+        }
+
+        private void SpeakHelp()
+        {
+            Speak("Pomoc.");
+        }
+
+        private void SpeakRepeat()
+        {
+            Speak("Powtórz proszę.");
+        }
+
+        private void SpeakQuit()
+        {
+            Speak("Zapraszam ponownie.");
+        }
+
+        protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        {
+            base.SpeechRecognitionEngine_SpeechRecognized(sender, e);
+
+            RecognitionResult result = e.Result;
+
+            if (result.Confidence < 0.6)
+            {
+                SpeakRepeat();
+            }
+            else
+            {
+                string command = result.Semantics.Value.ToString().ToLower();
+                switch (command)
+                {
+                    case "back":
+                        Dispatch(MoveBack);
+                        break;
+                    case "help":
+                        SpeakHelp();
+                        break;
+                    case "quit":
+                        SpeakQuit();
+                        Dispatch(Close);
+                        break;
+                }
+            }
         }
 
         private void InitComboBoxes()
