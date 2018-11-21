@@ -170,6 +170,11 @@ namespace Cinema
                             GenreComboBox.SelectedIndex = int.Parse(command.Skip(1).First());
                             Search();
                             break;
+                        case "genres":
+                            CategoryComboBox.SelectedIndex = 1;
+                            GenreComboBox.Focus();
+                            GenreComboBox.IsDropDownOpen = true;
+                            break;
                         case "help":
                             SpeakHelp();
                             break;
@@ -183,7 +188,6 @@ namespace Cinema
                                     CategoryComboBox.SelectedIndex = 2;
                                     break;
                             }
-
                             Search();
                             break;
                         case "quit":

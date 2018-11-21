@@ -7,6 +7,10 @@
         <tag>back</tag>
       </item>
       <item>
+        <ruleref uri="#genres" />
+        <tag>genres</tag>
+      </item>
+      <item>
         <ruleref uri="#help" />
         <tag>help</tag>
       </item>
@@ -26,6 +30,17 @@
       <item>Wróć</item>
       <item>Powróć</item>
     </one-of>
+  </rule>
+
+  <rule id="genres">
+    <item>
+      <one-of>
+        <item>Pokaż</item>
+        <item>Wyświetl</item>
+      </one-of>
+      <item repeat="0-1">dostępne</item>
+      <item>gatunki</item>
+    </item>
   </rule>
 
   <rule id="help">
