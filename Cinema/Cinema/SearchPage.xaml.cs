@@ -57,8 +57,6 @@ namespace Cinema
 
                 using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
                 {
-                    //Dispatch(new Action(() =>
-                    //{
                     sqlConnection.Open();
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
@@ -76,7 +74,6 @@ namespace Cinema
                     }
 
                     sqlConnection.Close();
-                    //}));
                 }
 
                 Genres = genres.ToArray();
