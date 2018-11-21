@@ -24,7 +24,7 @@ namespace Cinema
     /// <summary>
     /// Interaction logic for MainPage.xaml
     /// </summary>
-    public partial class MainPage : Page, SpeechControllable
+    public partial class MainPage : Page, ISpeechRecognize
     {
         private SpeechRecognitionEngine speechRecognitionEngine;
 

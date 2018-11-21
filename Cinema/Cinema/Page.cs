@@ -35,16 +35,16 @@ namespace Cinema
 
         protected void ChangePage(Page page)
         {
-            if (this is SpeechControllable)
+            if (this is ISpeechRecognize)
             {
-                ((SpeechControllable)this).StopSpeechRecognition();
+                ((ISpeechRecognize)this).StopSpeechRecognition();
             }
 
             window.Content = page ?? throw new NullReferenceException("Page cannot be null.");
 
-            if (page is SpeechControllable)
+            if (page is ISpeechRecognize)
             {
-                ((SpeechControllable)page).EnableSpeechRecognition();
+                ((ISpeechRecognize)page).EnableSpeechRecognition();
             }
         }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cinema
 {
-    interface SpeechControllable
+    interface ISpeechRecognize
     {
         void InitializeSpeechRecognition();
 
