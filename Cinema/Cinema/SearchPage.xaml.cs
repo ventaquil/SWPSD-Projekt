@@ -150,10 +150,10 @@ namespace Cinema
                 GenreComboBox.Items.Add(genre.Name);
             }
 
-            CategoryComboBox.DropDownClosed += CategoryComboBox_DropDownClosed;
+            CategoryComboBox.SelectionChanged += CategoryComboBox_SelectionChanged;
         }
 
-        private void CategoryComboBox_DropDownClosed(object sender, EventArgs e)
+        private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (CategoryComboBox.SelectedItem != null)
             {
