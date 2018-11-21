@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,18 @@ namespace Cinema
             InitializeComponent();
 
             InitComboBoxes();
+        }
+
+        public override void InitializeSpeech(object sender, DoWorkEventArgs e)
+        {
+            base.InitializeSpeech(sender, e);
+
+            SpeakHello();
+        }
+
+        private void SpeakHello()
+        {
+            Speak("Witaj w wyszukiwarce.");
         }
 
         private void InitComboBoxes()

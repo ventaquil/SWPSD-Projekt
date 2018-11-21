@@ -28,7 +28,7 @@ namespace Cinema
     {
         public MainPage(Window window, SqlConnection sqlConnection) : base(window, sqlConnection)
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
 
         public override void InitializeSpeech(object sender, DoWorkEventArgs e)
@@ -37,7 +37,6 @@ namespace Cinema
 
             SpeakHello();
         }
-
 
         private void MoveToOrderPage()
         {
@@ -53,7 +52,7 @@ namespace Cinema
         {
             MoveToOrderPage();
         }
-        
+
         private void SpeakHello()
         {
             Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
@@ -82,7 +81,7 @@ namespace Cinema
         protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             base.SpeechRecognitionEngine_SpeechRecognized(sender, e);
-            
+
             RecognitionResult result = e.Result;
 
             if (result.Confidence < 0.6)
