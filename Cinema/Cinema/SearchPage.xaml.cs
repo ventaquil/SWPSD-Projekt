@@ -128,14 +128,14 @@ namespace Cinema
                 switch (command)
                 {
                     case "back":
-                        Dispatch(MoveBack);
+                        DispatchAsync(MoveBack);
                         break;
                     case "help":
                         SpeakHelp();
                         break;
                     case "quit":
                         SpeakQuit();
-                        Dispatch(Close);
+                        DispatchAsync(Close);
                         break;
                 }
             }

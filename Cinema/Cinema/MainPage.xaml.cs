@@ -97,14 +97,14 @@ namespace Cinema
                         SpeakHelp();
                         break;
                     case "order":
-                        Dispatch(MoveToOrderPage);
+                        DispatchAsync(MoveToOrderPage);
                         break;
                     case "search":
-                        Dispatch(MoveToSearchPage);
+                        DispatchAsync(MoveToSearchPage);
                         break;
                     case "quit":
                         SpeakQuit();
-                        Dispatch(Close);
+                        DispatchAsync(Close);
                         break;
                 }
             }

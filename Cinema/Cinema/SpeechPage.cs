@@ -36,9 +36,14 @@ namespace Cinema
         {
         }
 
-        protected void Dispatch(Action action)
+        protected void DispatchAsync(Action action)
         {
             Dispatcher.BeginInvoke(action);
+        }
+
+        protected void DispatchSync(Action action)
+        {
+            Dispatcher.Invoke(action);
         }
 
         public void EnableSpeechRecognition()
