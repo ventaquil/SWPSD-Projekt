@@ -24,7 +24,7 @@ namespace Cinema
     /// <summary>
     /// Interaction logic for MainPage.xaml
     /// </summary>
-    public partial class MainPage : Page, ISpeechRecognize
+    public partial class MainPage : Page, ISpeechRecognize, ISpeechSynthesis
     {
         private SpeechRecognitionEngine speechRecognitionEngine;
 
@@ -91,7 +91,7 @@ namespace Cinema
             speechRecognitionEngine.SpeechRecognized += SpeechRecognitionEngine_SpeechRecognized;
         }
 
-        private void InitializeSpeechSynthesis()
+        public void InitializeSpeechSynthesis()
         {
             speechSynthesizer = new SpeechSynthesizer();
             speechSynthesizer.SetOutputToDefaultAudioDevice();
@@ -112,7 +112,7 @@ namespace Cinema
             MoveToOrderPage();
         }
 
-        private void Speak(String message)
+        public void Speak(String message)
         {
             StopSpeechRecognition();
 
