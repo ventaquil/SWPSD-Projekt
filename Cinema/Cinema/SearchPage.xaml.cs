@@ -163,7 +163,7 @@ namespace Cinema
                 string[] command = result.Semantics.Value.ToString().ToLower().Split('.');
                 DispatchAsync(() =>
                 {
-                    switch (command.First())
+                    switch (command.First()) // TODO show info about movie
                     {
                         case "back":
                             MoveBack();
