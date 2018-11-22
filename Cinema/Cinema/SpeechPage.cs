@@ -69,6 +69,7 @@ namespace Cinema
 
         public Grammar GetSpeechGrammar()
         {
+            Console.WriteLine(GetType().Name);
             SrgsDocument srgsDocument = new SrgsDocument("./Resources/" + GetType().Name + ".srgs");
 
             AddCustomSpeechGrammarRules(srgsDocument.Rules);

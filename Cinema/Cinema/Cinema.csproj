@@ -223,6 +223,9 @@
     <None Include="Resources\MainPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\OrderPage.srgs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\SearchPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
