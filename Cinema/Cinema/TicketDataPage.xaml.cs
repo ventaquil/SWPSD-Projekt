@@ -24,7 +24,7 @@ namespace Cinema
         private List<float> prices;
         private int rowNo, screeningId, seatNo;
 
-        public TicketDataPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int rowNo, int seatNo) : base(window, previousPage, sqlConnectionFactory)
+        public TicketDataPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int rowNo, int seatNo, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
         {
             this.screeningId = screeningId;
             this.rowNo = rowNo;
@@ -73,7 +73,7 @@ namespace Cinema
                 int seatId = GetSeatId();
                 string bookerName = String.Format("{0}", NameTextBox.Text);
 
-                ChangePage(new SummaryPage(window, this, sqlConnectionFactory, screeningId, seatId, PriceComboBox.SelectedIndex + 1, price, bookerName));
+                ChangePage(new SummaryPage(window, this, sqlConnectionFactory, screeningId, seatId, PriceComboBox.SelectedIndex + 1, price, bookerName, ticketWindow));
             }
         }
 

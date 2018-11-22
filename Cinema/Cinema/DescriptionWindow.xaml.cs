@@ -20,17 +20,18 @@ namespace Cinema
     /// </summary>
     public partial class DescriptionWindow : Window
     {
-        private Window window;
+        private Window window, ticketWindow;
         private Page previousPage;
         private SqlConnectionFactory sqlConnectionFactory;
         private string movieTitle;
 
-        public DescriptionWindow(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, string movieTitle)
+        public DescriptionWindow(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, string movieTitle, Window ticketWindow)
         {
             this.window = window;
             this.previousPage = previousPage;
             this.sqlConnectionFactory = sqlConnectionFactory;
             this.movieTitle = movieTitle;
+            this.ticketWindow = ticketWindow;
 
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -40,7 +41,7 @@ namespace Cinema
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
-            window.Content = new MovieHoursPage(window, previousPage, sqlConnectionFactory, movieTitle);
+            window.Content = new MovieHoursPage(window, previousPage, sqlConnectionFactory, movieTitle, ticketWindow);
 
             Close();
         }

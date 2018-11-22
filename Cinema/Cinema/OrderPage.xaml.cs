@@ -20,7 +20,7 @@ namespace Cinema
     /// </summary>
     public partial class OrderPage : Page
     {
-        public OrderPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
+        public OrderPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
         {
             InitializeComponent();
 
@@ -61,7 +61,7 @@ namespace Cinema
         {
             if (!String.Format("{0}", MoviesListBox.SelectedItem).Equals(""))
             {
-                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, String.Format("{0}", MoviesListBox.SelectedItem)));
+                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, String.Format("{0}", MoviesListBox.SelectedItem), ticketWindow));
             }
         }
     }

@@ -23,7 +23,7 @@ namespace Cinema
     {
         private int screeningId;
 
-        public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId) : base(window, previousPage, sqlConnectionFactory)
+        public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
         {
             this.screeningId = screeningId;
 
@@ -88,7 +88,7 @@ namespace Cinema
             {
                 foreach (int seat in auditoriumSeats[row])
                 {
-                    SeatButton seatButton = new SeatButton(window, this, sqlConnectionFactory, screeningId, row, seat);
+                    SeatButton seatButton = new SeatButton(window, this, sqlConnectionFactory, screeningId, row, seat, ticketWindow);
                     Grid.SetRow(seatButton, row - 1);
                     Grid.SetColumn(seatButton, seat - 1);
                     SeatsGrid.Children.Add(seatButton);

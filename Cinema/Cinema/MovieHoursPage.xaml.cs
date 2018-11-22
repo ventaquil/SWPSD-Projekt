@@ -25,7 +25,7 @@ namespace Cinema
 
         private List<int> screeningId;
 
-        public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, String movieTitle) : base(window, previousPage, sqlConnectionFactory)
+        public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, String movieTitle, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
         {
             this.movieTitle = movieTitle;
 
@@ -76,7 +76,7 @@ namespace Cinema
         {
             if (!String.Format("{0}", HoursListBox.SelectedItem).Equals(""))
             {
-                ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[HoursListBox.SelectedIndex]));
+                ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[HoursListBox.SelectedIndex], ticketWindow));
             }
         }
     }

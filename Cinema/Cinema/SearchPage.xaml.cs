@@ -43,7 +43,7 @@ namespace Cinema
 
         private Genre[] Genres;
 
-        public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
+        public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
         {
             InitializeComponent();
 
@@ -285,7 +285,7 @@ namespace Cinema
         {
             if (String.Format("{0}", ResultsListBox.SelectedItem).Length > 0)
             {
-                new DescriptionWindow(window, this, sqlConnectionFactory, String.Format("{0}", ResultsListBox.SelectedItem)).Show();
+                new DescriptionWindow(window, this, sqlConnectionFactory, String.Format("{0}", ResultsListBox.SelectedItem), ticketWindow).Show();
             }
         }
     }

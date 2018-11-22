@@ -126,6 +126,9 @@
     <Compile Include="TicketDataPage.xaml.cs">
       <DependentUpon>TicketDataPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TicketsLogWindow.xaml.cs">
+      <DependentUpon>TicketsLogWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="DescriptionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -176,6 +179,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TicketDataPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TicketsLogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -37,15 +37,18 @@ namespace Cinema
 
                 ExecuteCreateQueries();
             }
-            
-            Content = new MainPage(this, CreateSqlConnectionFactory());
+
+            SqlConnectionFactory sqlConnectionFactory = CreateSqlConnectionFactory();
+
+            Window ticketsWindow = new TicketsLogWindow(sqlConnectionFactory);
+            Content = new MainPage(this, sqlConnectionFactory, ticketsWindow);
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
         public SqlConnectionFactory CreateSqlConnectionFactory()
         {
-            return new SqlConnectionFactory(ConnectionString); 
+            return new SqlConnectionFactory(ConnectionString);
         }
 
         public void CreateSqlDatabase()
