@@ -191,19 +191,9 @@ namespace Cinema
             {
                 sqlConnection.Open();
 
-                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                foreach(Movie movie in GetMovies())
                 {
-                    sqlCommand.CommandText = "select distinct Movies.title " +
-                        "from Movies, Screenings " +
-                        "where Movies.id = Screenings.movieID " +
-                        "and Screenings.screeningDate = CONVERT(date,  GETDATE())";
-
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                    while (sqlDataReader.Read())
-                    {
-                        MoviesListBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
-                    }
-                    sqlDataReader.Close();
+                    MoviesListBox.Items.Add(movie.Name);
                 }
 
                 sqlConnection.Close();
