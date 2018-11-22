@@ -44,12 +44,18 @@ namespace Cinema
 
                 using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    sqlCommand.CommandText = "select * from Tickets";
+                    sqlCommand.CommandText = "execute procedure_GetTicketsInfoList";
 
                     SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                     while (sqlDataReader.Read())
                     {
-                        TicketsOrdersListBox.Items.Add(String.Format("{0}", sqlDataReader[4]));
+                        //Seats.rowNo, Seats.seatNo, Movies.title, Screenings.screeningDate, Screenings.screeningTime, Prices.priceDescription, Prices.price, Tickets.bookerName
+                        TicketsOrdersListBox.Items.Add(
+                            "Kupujący: " + String.Format("{0}", sqlDataReader[7]) +
+                            ";\tFilm: " + String.Format("{0}", sqlDataReader[2]) +
+                            ";\tData: " + String.Format("{0}", sqlDataReader[3]) + " " + String.Format("{0}", sqlDataReader[4]) +
+                            ";\tMiejsce: " + String.Format("{0}", sqlDataReader[0]) + "/" + String.Format("{0}", sqlDataReader[1]) +
+                            ";\tCena: " + String.Format("{0}", sqlDataReader[5]) + " (" + String.Format("{0}", sqlDataReader[6]) + "zł)");
                     }
                     sqlDataReader.Close();
                 }
