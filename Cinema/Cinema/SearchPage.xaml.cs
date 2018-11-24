@@ -347,7 +347,12 @@ namespace Cinema
 
         private void SpeakHelp()
         {
-            Speak("Pomoc.");
+            Speak("Aby wyszukać wszystkie filmy powiedz WYSZUKAJ WSZYSTKIE FILMY.");
+            Speak("Aby wyszukać najpopularniejsze powiedz WYSZUKAJ NAJPOPULARNIEJSZE.");
+            Speak("Aby wyświetlić dostępne gatunki powiedz WYŚWIETL GATUNKI.");
+            Speak("Aby wybrać gatunek powiedz WYBIERZ NAZWA GATUNKU.");
+            Speak("Aby wyświetlić szczegóły filmu powiedz WYŚWIETL TYTUŁ FILMU.");
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
