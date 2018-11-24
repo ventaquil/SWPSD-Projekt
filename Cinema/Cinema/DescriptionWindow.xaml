@@ -48,7 +48,7 @@
             <Setter Property="FontStyle" Value="Italic"/>
 
             <Setter Property="Cursor" Value="Hand"/>
-            
+
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="LightPink"/>
@@ -60,7 +60,7 @@
         </Style>
 
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
-            
+
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Width" Value="500"/>
@@ -90,7 +90,7 @@
         <TextBlock Margin="10,-300,10,0" FontSize="50" Style="{StaticResource TextBlockStyle}"
                    x:Name="TitleTextBlock"/>
 
-        <TextBox Margin="0,50,0,0" Style="{StaticResource TextBoxStyle}" Text="**Tu powienien być opis (ale nie ma)**"/>
+        <TextBox x:Name="DescriptionTextBox" Margin="0,50,0,0" Style="{StaticResource TextBoxStyle}" Text="**Tu powienien być opis (ale nie ma)**"/>
 
         <Button Margin="260,370,0,0" Style="{StaticResource ButtonStyle}" 
                 Content="Zamów bilet" x:Name="OrderButton" Click="OrderButton_Click"/>

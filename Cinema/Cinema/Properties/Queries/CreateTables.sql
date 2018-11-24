@@ -7,7 +7,8 @@ CREATE TABLE Genres (
 
 CREATE TABLE Movies (
 	id INT IDENTITY(1,1) PRIMARY KEY,
-	title VARCHAR(50) NOT NULL
+	title VARCHAR(50) NOT NULL,
+	description TEXT NOT NULL
 );
 
 CREATE TABLE Tags (

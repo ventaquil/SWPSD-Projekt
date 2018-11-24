@@ -26,15 +26,32 @@ namespace Cinema
     {
         public class Genre
         {
-            public readonly String Name;
+            public readonly string Name;
 
-            public Genre(String name)
+            public Genre(string name)
             {
                 Name = name;
             }
         };
 
-        private static string[] categories =
+        public class Movie
+        {
+            public readonly string Description;
+
+            public readonly string Name;
+
+            public Movie(string name)
+            {
+                Name = name;
+            }
+
+            public Movie(string name, string description) : this(name)
+            {
+                Description = description;
+            }
+        }
+
+        private static string[] Categories =
         {
             "Wszystkie",
             "Gatunek",
@@ -43,11 +60,126 @@ namespace Cinema
 
         private Genre[] Genres;
 
+        private Movie[] Movies;
+
+        private string MovieLatestQuery;
+
         public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
 
-            InitComboBoxes();
+            InitializeComboBoxes();
+        }
+
+        protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection srgsRules)
+        {
+            AddGenresSpeechGrammarRulers(srgsRules);
+
+            AddMoviesSpeechGrammarRules(srgsRules);
+        }
+
+        private void AddGenresSpeechGrammarRulers(SrgsRulesCollection srgsRules)
+        {
+            SrgsRule genreSrgsRule;
+
+            {
+                SrgsOneOf genreSrgsOneOf = new SrgsOneOf();
+
+                int i = 0;
+                foreach (Genre genre in GetGenres())
+                {
+                    SrgsItem srgsItem = new SrgsItem(genre.Name);
+                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"search.genres." + i++ + "\";"));
+
+                    genreSrgsOneOf.Add(srgsItem);
+                }
+
+                SrgsItem genreSrgsItem = new SrgsItem("Wybierz");
+                genreSrgsItem.Add(new SrgsItem(0, 1, "gatunek"));
+
+                SrgsItem phraseSrgsItem = new SrgsItem();
+                phraseSrgsItem.Add(genreSrgsItem);
+                phraseSrgsItem.Add(genreSrgsOneOf);
+
+                genreSrgsRule = new SrgsRule("genre", phraseSrgsItem);
+            }
+
+            srgsRules.Add(genreSrgsRule);
+
+            {
+                SrgsItem srgsItem = new SrgsItem();
+                srgsItem.Add(new SrgsRuleRef(genreSrgsRule));
+
+                SrgsRule rootSrgsRule = srgsRules.Where(rule => rule.Id == "root").First();
+                SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
+                srgsOneOf.Add(srgsItem);
+            }
+        }
+
+        private void AddMoviesSpeechGrammarRules(SrgsRulesCollection srgsRules)
+        {
+            Movie[] movies = null;
+
+            DispatchSync(() =>
+            {
+                movies = GetMovies();
+            });
+
+            if ((movies != null) && (movies.Length > 0))
+            {
+                SrgsRule movieSrgsRule;
+
+                {
+                    SrgsOneOf movieSrgsOneOf = new SrgsOneOf();
+
+                    int i = 0;
+                    foreach (Movie movie in movies)
+                    {
+                        SrgsItem srgsItem = new SrgsItem(movie.Name);
+                        srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"movies." + i++ + "\";"));
+
+                        movieSrgsOneOf.Add(srgsItem);
+                    }
+
+                    SrgsItem movieSrgsItem = new SrgsItem();
+                    SrgsOneOf srgsOneOf = new SrgsOneOf();
+                    srgsOneOf.Add(new SrgsItem("Wyświetl"));
+                    srgsOneOf.Add(new SrgsItem("Pokaż"));
+                    srgsOneOf.Add(new SrgsItem("Wybierz"));
+                    movieSrgsItem.Add(srgsOneOf);
+                    movieSrgsItem.Add(new SrgsItem(0, 1, "film"));
+
+                    SrgsItem phraseSrgsItem = new SrgsItem();
+                    phraseSrgsItem.Add(movieSrgsItem);
+                    phraseSrgsItem.Add(movieSrgsOneOf);
+
+                    movieSrgsRule = new SrgsRule("movie", phraseSrgsItem);
+                }
+
+                srgsRules.Add(movieSrgsRule);
+
+                {
+                    SrgsItem srgsItem = new SrgsItem();
+                    srgsItem.Add(new SrgsRuleRef(movieSrgsRule));
+
+                    SrgsRule rootSrgsRule = srgsRules.Where(rule => rule.Id == "root").First();
+                    SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
+                    srgsOneOf.Add(srgsItem);
+                }
+            }
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveBack();
+        }
+
+        private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CategoryComboBox.SelectedItem != null)
+            {
+                GenreComboBox.Visibility = (CategoryComboBox.SelectedIndex == 1) ? Visibility.Visible : Visibility.Hidden;
+            }
         }
 
         public Genre[] GetGenres()
@@ -62,7 +194,7 @@ namespace Cinema
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        sqlCommand.CommandText = "select genre from Genres";
+                        sqlCommand.CommandText = "SELECT genre FROM Genres";
 
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                         while (sqlDataReader.Read())
@@ -83,42 +215,78 @@ namespace Cinema
             return Genres;
         }
 
-        protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
+        public Movie[] GetMovies()
         {
-            SrgsRule genreSrgsRule;
+            string query = null;
 
+            switch (CategoryComboBox.SelectedIndex)
             {
-                SrgsOneOf genreSrgsOneOf = new SrgsOneOf();
+                case 0:
+                    query = "SELECT DISTINCT Movies.title, CONVERT(VARCHAR(MAX), Movies.description) AS description " +
+                        "FROM Movies, Screenings " +
+                        "WHERE (Movies.id = Screenings.movieID) AND (Screenings.screeningDate = CONVERT(date, GETDATE()))";
+                    break;
+                case 1:
+                    if (GenreComboBox.SelectedItem != null)
+                    {
+                        query = "EXECUTE procedure_GetMoviesByGenre " + string.Format("'{0}'", GenreComboBox.SelectedItem);
+                    }
+                    break;
+                case 2:
+                    query = "EXECUTE procedure_MostPopularMovies";
+                    break;
+            }
 
-                int i = 0;
-                foreach (Genre genre in GetGenres())
+            if (query == null)
+            {
+                Movies = null;
+            }
+            else if ((Movies == null) || (query != MovieLatestQuery)) // query != null
+            {
+                List<Movie> movies = new List<Movie>();
+
+                using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
                 {
-                    SrgsItem srgsItem = new SrgsItem(genre.Name);
-                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"genre." + i++ + "\";"));
+                    sqlConnection.Open();
 
-                    genreSrgsOneOf.Add(srgsItem);
+                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                    {
+                        sqlCommand.CommandText = query;
+
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        while (sqlDataReader.Read())
+                        {
+                            string name = string.Format("{0}", sqlDataReader[0]);
+                            string description = string.Format("{0}", sqlDataReader[1]);
+                            movies.Add(new Movie(name, description));
+                        }
+                        sqlDataReader.Close();
+                    }
+
+                    sqlConnection.Close();
                 }
 
-                SrgsItem genreSrgsItem = new SrgsItem("Wybierz");
-                genreSrgsItem.Add(new SrgsItem(0, 1, "gatunek"));
-
-                SrgsItem phraseSrgsItem = new SrgsItem();
-                phraseSrgsItem.Add(genreSrgsItem);
-                phraseSrgsItem.Add(genreSrgsOneOf);
-
-                genreSrgsRule = new SrgsRule("genre", phraseSrgsItem);
+                Movies = movies.ToArray();
             }
 
-            rules.Add(genreSrgsRule);
+            MovieLatestQuery = query;
 
+            return Movies;
+        }
+
+        private void InitializeComboBoxes()
+        {
+            foreach (string category in Categories)
             {
-                SrgsItem srgsItem = new SrgsItem();
-                srgsItem.Add(new SrgsRuleRef(genreSrgsRule));
-
-                SrgsRule rootSrgsRule = rules.Where(rule => rule.Id == "root").First();
-                SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
-                srgsOneOf.Add(srgsItem);
+                CategoryComboBox.Items.Add(category);
             }
+
+            foreach (Genre genre in GetGenres())
+            {
+                GenreComboBox.Items.Add(genre.Name);
+            }
+
+            CategoryComboBox.SelectionChanged += CategoryComboBox_SelectionChanged;
         }
 
         public override void InitializeSpeech(object sender, DoWorkEventArgs e)
@@ -128,6 +296,51 @@ namespace Cinema
             SpeakHello();
         }
 
+        private void ResultsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ShowDescription(ResultsListBox.SelectedIndex);
+        }
+
+        private void ShowDescription(int movieIndex)
+        {
+            try
+            {
+                Movie movie = GetMovies()[movieIndex];
+                // TODO some method to smartly create window - disable speech recognition and enable on focus on
+                DescriptionWindow descriptionWindow = new DescriptionWindow(window, this, sqlConnectionFactory, movie.Name, movie.Description);
+                descriptionWindow.Show();
+                descriptionWindow.Focus();
+            }
+            catch (IndexOutOfRangeException)
+            {
+            }
+        }
+
+        private void Search()
+        {
+            ResultsListBox.Items.Clear();
+
+            if (GetMovies()?.Length > 0)
+            {
+                foreach (Movie movie in GetMovies())
+                {
+                    ResultsListBox.Items.Add(movie.Name);
+                }
+            }
+
+            ReloadGrammars();
+
+            if (!ResultsListBox.Items.IsEmpty)
+            {
+                ResultsListBox.Focus();
+            }
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            Search();
+        }
+
         private void SpeakHello()
         {
             Speak("Witaj w wyszukiwarce.");
@@ -135,7 +348,12 @@ namespace Cinema
 
         private void SpeakHelp()
         {
-            Speak("Pomoc.");
+            Speak("Aby wyszukać wszystkie filmy powiedz WYSZUKAJ WSZYSTKIE FILMY.");
+            Speak("Aby wyszukać najpopularniejsze powiedz WYSZUKAJ NAJPOPULARNIEJSZE.");
+            Speak("Aby wyświetlić dostępne gatunki powiedz WYŚWIETL GATUNKI.");
+            Speak("Aby wybrać gatunek powiedz WYBIERZ NAZWA GATUNKU.");
+            Speak("Aby wyświetlić szczegóły filmu powiedz WYŚWIETL TYTUŁ FILMU.");
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
@@ -168,26 +386,31 @@ namespace Cinema
                         case "back":
                             MoveBack();
                             break;
-                        case "genre":
-                            CategoryComboBox.SelectedIndex = 1;
-                            GenreComboBox.SelectedIndex = int.Parse(command.Skip(1).First());
-                            GenreComboBox.IsDropDownOpen = false;
-                            Search();
-                            ResultsListBox.Focus();
-                            break;
-                        case "genres":
-                            CategoryComboBox.SelectedIndex = 1;
-                            GenreComboBox.Focus();
-                            GenreComboBox.IsDropDownOpen = true;
-                            break;
                         case "help":
                             SpeakHelp();
+                            break;
+                        case "movies":
+                            ShowDescription(int.Parse(command.Skip(1).First()));
                             break;
                         case "search":
                             switch (command.Skip(1).First())
                             {
                                 case "all":
                                     CategoryComboBox.SelectedIndex = 0;
+                                    break;
+                                case "genres":
+                                    CategoryComboBox.SelectedIndex = 1;
+                                    switch (command.Length)
+                                    {
+                                        case 2:
+                                            GenreComboBox.Focus();
+                                            GenreComboBox.IsDropDownOpen = true;
+                                            break;
+                                        default:
+                                            GenreComboBox.SelectedIndex = int.Parse(command.Skip(2).First());
+                                            GenreComboBox.IsDropDownOpen = false;
+                                            break;
+                                    }
                                     break;
                                 case "popular":
                                     CategoryComboBox.SelectedIndex = 2;
@@ -201,91 +424,6 @@ namespace Cinema
                             break;
                     }
                 });
-            }
-        }
-
-        private void InitComboBoxes()
-        {
-            foreach (string category in categories)
-            {
-                CategoryComboBox.Items.Add(category);
-            }
-
-            foreach (Genre genre in GetGenres())
-            {
-                GenreComboBox.Items.Add(genre.Name);
-            }
-
-            CategoryComboBox.SelectionChanged += CategoryComboBox_SelectionChanged;
-        }
-
-        private void CategoryComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (CategoryComboBox.SelectedItem != null)
-            {
-                GenreComboBox.Visibility = CategoryComboBox.SelectedItem.Equals("Gatunek") ? Visibility.Visible : Visibility.Hidden;
-            }
-        }
-
-        private void SearchButton_Click(object sender, RoutedEventArgs e)
-        {
-            Search();
-        }
-
-        private void Search()
-        {
-            ResultsListBox.Items.Clear();
-
-            if (CategoryComboBox.SelectedItem != null)
-            {
-                using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
-                {
-                    sqlConnection.Open();
-
-                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                    {
-                        if (CategoryComboBox.SelectedItem.Equals("Wszystkie"))
-                        {
-                            sqlCommand.CommandText = "select distinct Movies.title " +
-                                "from Movies, Screenings " +
-                                "where Movies.id = Screenings.movieID and " +
-                                "Screenings.screeningDate = CONVERT(date,  GETDATE())";
-                        }
-                        else if (CategoryComboBox.SelectedItem.Equals("Gatunek") && (GenreComboBox.SelectedItem != null))
-                        {
-                            sqlCommand.CommandText = "execute procedure_GetMoviesByGenre " + String.Format("'{0}'", GenreComboBox.SelectedItem);
-                        }
-                        else if (CategoryComboBox.SelectedItem.Equals("Najpopularniejsze"))
-                        {
-                            sqlCommand.CommandText = "execute procedure_MostPopularMovies";
-                        }
-
-                        if (sqlCommand.CommandText.Length > 0)
-                        {
-                            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                            while (sqlDataReader.Read())
-                            {
-                                ResultsListBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
-                            }
-                            sqlDataReader.Close();
-                        }
-                    }
-
-                    sqlConnection.Close();
-                }
-            }
-        }
-
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            MoveBack();
-        }
-
-        private void ResultsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (String.Format("{0}", ResultsListBox.SelectedItem).Length > 0)
-            {
-                new DescriptionWindow(window, this, sqlConnectionFactory, String.Format("{0}", ResultsListBox.SelectedItem)).Show();
             }
         }
     }

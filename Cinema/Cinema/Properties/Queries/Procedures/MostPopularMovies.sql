@@ -1,14 +1,15 @@
-﻿create   procedure procedure_MostPopularMovies 
-as
-	select tt.title 
-		from (select distinct Movies.title as title, t.all_tickets as tickets
-			from (
-				select Movies.id as all_id, count(Tickets.id) as all_tickets
-					from Tickets, Screenings, Movies
-					where	Tickets.screeningID = Screenings.id and 
-							Screenings.movieID = Movies.id
-					group by Movies.id) t, Movies, Screenings
-			where all_id = Movies.id and Screenings.movieID = all_id and
-			Screenings.screeningDate = CONVERT(date,  GETDATE())) tt
-		order by tt.tickets DESC
+﻿CREATE PROCEDURE procedure_MostPopularMovies 
+AS
+	SELECT tt.title, tt.description
+	FROM (
+		SELECT DISTINCT Movies.title AS title, CONVERT(VARCHAR(MAX), Movies.description) AS description, t.all_tickets AS tickets
+		FROM (
+			SELECT Movies.id AS all_id, COUNT(Tickets.id) AS all_tickets
+			FROM Tickets, Screenings, Movies
+			WHERE Tickets.screeningID = Screenings.id AND Screenings.movieID = Movies.id
+			GROUP BY Movies.id
+		) t, Movies, Screenings
+		WHERE all_id = Movies.id AND Screenings.movieID = all_id AND Screenings.screeningDate = CONVERT(date,  GETDATE())
+	) tt
+	ORDER BY tt.tickets DESC
         

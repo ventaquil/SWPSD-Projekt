@@ -32,7 +32,7 @@ namespace Cinema
             ExecuteBackgroundAction(InitializeSpeech);
         }
 
-        protected virtual void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
+        protected virtual void AddCustomSpeechGrammarRules(SrgsRulesCollection srgsRules)
         {
         }
 
@@ -90,7 +90,7 @@ namespace Cinema
             CultureInfo cultureInfo = new CultureInfo("pl-PL");
 
             speechRecognitionEngine = new SpeechRecognitionEngine(cultureInfo);
-            speechRecognitionEngine.LoadGrammarAsync(GetSpeechGrammar());
+            ReloadGrammars();
             speechRecognitionEngine.SetInputToDefaultAudioDevice();
             speechRecognitionEngine.SpeechRecognized += SpeechRecognitionEngine_SpeechRecognized;
         }
@@ -99,6 +99,23 @@ namespace Cinema
         {
             speechSynthesizer = new SpeechSynthesizer();
             speechSynthesizer.SetOutputToDefaultAudioDevice();
+        }
+
+        protected void LoadGrammarAsync(Grammar grammar)
+        {
+            speechRecognitionEngine.LoadGrammarAsync(grammar);
+        }
+
+        protected void LoadGrammarSync(Grammar grammar)
+        {
+            speechRecognitionEngine.LoadGrammar(grammar);
+        }
+
+        protected void ReloadGrammars()
+        {
+            speechRecognitionEngine.UnloadAllGrammars();
+
+            LoadGrammarAsync(GetSpeechGrammar());
         }
 
         public void Speak(string message)
