@@ -36,11 +36,18 @@ namespace Cinema
 
         public class Movie
         {
+            public readonly string Description;
+
             public readonly string Name;
 
             public Movie(string name)
             {
                 Name = name;
+            }
+
+            public Movie(string name, string description) : this(name)
+            {
+                Description = description;
             }
         }
 
@@ -210,7 +217,7 @@ namespace Cinema
             switch (CategoryComboBox.SelectedIndex)
             {
                 case 0:
-                    query = "select distinct Movies.title " +
+                    query = "select distinct Movies.title, CONVERT(VARCHAR(MAX), Movies.description) AS description " +
                         "from Movies, Screenings " +
                         "where Movies.id = Screenings.movieID and " +
                         "Screenings.screeningDate = CONVERT(date,  GETDATE())";
@@ -246,7 +253,8 @@ namespace Cinema
                         while (sqlDataReader.Read())
                         {
                             string name = string.Format("{0}", sqlDataReader[0]);
-                            movies.Add(new Movie(name));
+                            string description = string.Format("{0}", sqlDataReader[1]);
+                            movies.Add(new Movie(name, description));
                         }
                         sqlDataReader.Close();
                     }
@@ -294,8 +302,9 @@ namespace Cinema
             try
             {
                 Movie movie = GetMovies()[movieIndex];
-                DescriptionWindow descriptionWindow = new DescriptionWindow(window, this, sqlConnectionFactory, movie.Name);
+                DescriptionWindow descriptionWindow = new DescriptionWindow(window, this, sqlConnectionFactory, movie.Name, movie.Description);
                 descriptionWindow.Show();
+                descriptionWindow.Focus();
             }
             catch (IndexOutOfRangeException)
             {

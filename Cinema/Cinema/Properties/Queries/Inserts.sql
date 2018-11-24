@@ -5,14 +5,14 @@ INSERT INTO Genres(genre) VALUES ('Film animowany');
 INSERT INTO Genres(genre) VALUES ('Horror'); 
 INSERT INTO Genres(genre) VALUES ('Film dokumentalny'); 
 
-INSERT INTO Movies(title) VALUES ('World War Z'); 
-INSERT INTO Movies(title) VALUES ('Underworld'); 
-INSERT INTO Movies(title) VALUES ('Shrek'); 
-INSERT INTO Movies(title) VALUES ('Potwory i spółka'); 
-INSERT INTO Movies(title) VALUES ('Turysta'); 
-INSERT INTO Movies(title) VALUES ('Latawce'); 
-INSERT INTO Movies(title) VALUES ('Wojownik'); 
-INSERT INTO Movies(title) VALUES ('Zmierzch'); 
+INSERT INTO Movies(title, description) VALUES ('World War Z', 'World War Z – amerykańsko-maltański horror sci-fi z 2013 roku w reżyserii Marca Forstera.'); 
+INSERT INTO Movies(title, description) VALUES ('Underworld', 'Underworld – amerykański film z 2003 roku w reżyserii Lena Wisemana.'); 
+INSERT INTO Movies(title, description) VALUES ('Shrek', 'Shrek – amerykański film animowany z 2001 roku w reżyserii Andrew Adamsona i Vicky Jenson.'); 
+INSERT INTO Movies(title, description) VALUES ('Potwory i spółka', 'Potwory i spółka - amerykański pełnometrażowy film animowany w reżyserii Pete''a Doctera z 2001 roku wyprodukowany przez wytwórnię Pixar i Disney. Film został wykonany w technice trójwymiarowej. W lutym 2013 roku film trafił ponownie do kin, ale w wersji 3D. 5 lipca 2013 roku do kin trafia prequel o nazwie Uniwersytet potworny.'); 
+INSERT INTO Movies(title, description) VALUES ('Turysta', 'Turysta - amerykańsko-francuski thriller w reżyserii Floriana Henckela von Donnersmarcka z Johnnym Deppem i Angeliną Jolie w rolach głównych.'); 
+INSERT INTO Movies(title, description) VALUES ('Latawce', 'Latawce – bollywoodzki film akcji wyreżyserowany w 2010 w Ameryce przez Anurag Basu. W rolach głównych Hrithik Roshan, Bárbara Mori, Kangana Ranaut i Kabir Bedi.'); 
+INSERT INTO Movies(title, description) VALUES ('Wojownik', 'Wojownik − amerykański film fabularny z 2011 roku, napisany i wyreżyserowany przez Gavina O’Connora.'); 
+INSERT INTO Movies(title, description) VALUES ('Zmierzch', 'Zmierzch – amerykański film z 2008 roku, w reżyserii Catherine Hardwicke, oparty na książce Stephenie Meyer – Zmierzch. W rolach głównych występują Kristen Stewart i Robert Pattinson.'); 
 
 INSERT INTO Tags VALUES (1,1); 
 INSERT INTO Tags VALUES (1,5); 

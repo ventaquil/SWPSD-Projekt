@@ -1,8 +1,11 @@
-﻿create   procedure procedure_GetMoviesByGenre 
-	@genre varchar(100)
-as
-	select distinct movies.title 
-		from Tags, Genres, 
-		(select Movies.id, Movies.title as title from Movies, Screenings where Movies.id = Screenings.movieID and Screenings.screeningDate = CONVERT(date,  GETDATE())) movies
-		where	Genres.id = Tags.genreID and 
-				Tags.movieID = movies.id and Genres.genre = @genre;
+﻿CREATE PROCEDURE procedure_GetMoviesByGenre 
+	@genre VARCHAR(100)
+AS
+	SELECT DISTINCT movies.title, CONVERT(VARCHAR(MAX), movies.description) AS description
+	FROM Tags, Genres, 
+	(
+		SELECT Movies.id, Movies.title AS title, Movies.description AS description
+		FROM Movies, Screenings
+		WHERE (Movies.id = Screenings.movieID) AND (Screenings.screeningDate = CONVERT(date,  GETDATE()))
+	) movies
+	WHERE (Genres.id = Tags.genreID) AND (Tags.movieID = movies.id) AND (Genres.genre = @genre);
