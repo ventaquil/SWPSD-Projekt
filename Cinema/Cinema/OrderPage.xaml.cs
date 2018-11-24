@@ -20,6 +20,8 @@ namespace Cinema
     /// </summary>
     public partial class OrderPage : Page
     {
+        private Movie[] Movies;
+
         public OrderPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
@@ -27,41 +29,64 @@ namespace Cinema
             ListMovies();
         }
 
-        private void ListMovies()
-        {
-            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
-            {
-                sqlConnection.Open();
-
-                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                {
-                    sqlCommand.CommandText = "select distinct Movies.title " +
-                        "from Movies, Screenings " +
-                        "where Movies.id = Screenings.movieID " +
-                        "and Screenings.screeningDate = CONVERT(date,  GETDATE())";
-
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                    while (sqlDataReader.Read())
-                    {
-                        MoviesListBox.Items.Add(String.Format("{0}", sqlDataReader[0]));
-                    }
-                    sqlDataReader.Close();
-                }
-
-                sqlConnection.Close();
-            }
-        }
-
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             MoveBack();
         }
 
+        public Movie[] GetMovies()
+        {
+            if (Movies == null)
+            {
+                List<Movie> movies = new List<Movie>();
+
+                using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
+                {
+                    sqlConnection.Open();
+
+                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                    {
+                        sqlCommand.CommandText = "SELECT DISTINCT Movies.title, Movies.description " +
+                            "FROM Movies, Screenings " +
+                            "WHERE (Movies.id = Screenings.movieID) AND (Screenings.screeningDate = CONVERT(date, GETDATE()))";
+
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        while (sqlDataReader.Read())
+                        {
+                            string name = string.Format("{0}", sqlDataReader[0]);
+                            string description = string.Format("{0}", sqlDataReader[1]);
+
+                            movies.Add(new Movie(name, description));
+                        }
+                        sqlDataReader.Close();
+                    }
+
+                    sqlConnection.Close();
+                }
+
+                Movies = movies.ToArray();
+            }
+
+            return Movies;
+        }
+        private void ListMovies()
+        {
+            foreach (Movie movie in GetMovies())
+            {
+                MoviesListBox.Items.Add(movie.Name);
+            }
+        }
+
         private void MoviesListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!String.Format("{0}", MoviesListBox.SelectedItem).Equals(""))
+            try
             {
-                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, String.Format("{0}", MoviesListBox.SelectedItem)));
+                Movie movie = GetMovies()[MoviesListBox.SelectedIndex];
+
+                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, movie));
+            }
+            catch (IndexOutOfRangeException)
+            {
             }
         }
     }

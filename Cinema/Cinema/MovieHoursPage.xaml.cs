@@ -21,20 +21,16 @@ namespace Cinema
     /// </summary>
     public partial class MovieHoursPage : Page
     {
-        private String movieTitle;
-
         private List<int> screeningId;
 
-        public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, String movieTitle) : base(window, previousPage, sqlConnectionFactory)
+        public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Movie movie) : base(window, previousPage, sqlConnectionFactory)
         {
-            this.movieTitle = movieTitle;
-
             InitializeComponent();
 
-            ListHours();
+            ListHours(movie);
         }
 
-        private void ListHours()
+        private void ListHours(Movie movie)
         {
             screeningId = new List<int>();
 
@@ -47,18 +43,18 @@ namespace Cinema
                     sqlCommand.CommandText = "select distinct Screenings.id, Movies.title, Screenings.auditoriumID, Screenings.screeningTime " +
                         "from Movies, Screenings " +
                         "where Movies.id = Screenings.movieID " +
-                        "and Movies.title = '" + movieTitle +
+                        "and Movies.title = '" + movie.Name +
                         "' and Screenings.screeningDate = CONVERT(date,  GETDATE())";
 
                     SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                     while (sqlDataReader.Read())
                     {
-                        screeningId.Add(int.Parse(String.Format("{0}", sqlDataReader[0])));
+                        screeningId.Add(int.Parse(string.Format("{0}", sqlDataReader[0])));
 
-                        string[] hourDivided = String.Format("{0}", sqlDataReader[3]).Split(':');
+                        string[] hourDivided = string.Format("{0}", sqlDataReader[3]).Split(':');
                         string hour = hourDivided[0] + ":" + hourDivided[1];
 
-                        HoursListBox.Items.Add(String.Format("{0} \t sala {1} \t godzina {2}", sqlDataReader[1], sqlDataReader[2], hour));
+                        HoursListBox.Items.Add(string.Format("{0} \t sala {1} \t godzina {2}", sqlDataReader[1], sqlDataReader[2], hour));
                     }
                     sqlDataReader.Close();
                 }
@@ -74,7 +70,7 @@ namespace Cinema
 
         private void HoursListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!String.Format("{0}", HoursListBox.SelectedItem).Equals(""))
+            if (!string.Format("{0}", HoursListBox.SelectedItem).Equals(""))
             {
                 ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[HoursListBox.SelectedIndex]));
             }

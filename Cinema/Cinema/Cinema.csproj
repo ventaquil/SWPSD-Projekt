@@ -94,11 +94,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DescriptionWindow.xaml.cs">
-      <DependentUpon>DescriptionWindow.xaml</DependentUpon>
+    <Compile Include="DescriptionPage.xaml.cs">
+      <DependentUpon>DescriptionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ISpeechRecognize.cs" />
     <Compile Include="ISpeechSynthesis.cs" />
+    <Compile Include="Movie.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -126,7 +127,7 @@
     <Compile Include="TicketDataPage.xaml.cs">
       <DependentUpon>TicketDataPage.xaml</DependentUpon>
     </Compile>
-    <Page Include="DescriptionWindow.xaml">
+    <Page Include="DescriptionPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
