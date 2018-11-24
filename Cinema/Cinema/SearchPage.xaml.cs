@@ -141,11 +141,16 @@ namespace Cinema
                         movieSrgsOneOf.Add(srgsItem);
                     }
 
-                    SrgsItem genreSrgsItem = new SrgsItem("Wybierz");
-                    genreSrgsItem.Add(new SrgsItem(0, 1, "film"));
+                    SrgsItem movieSrgsItem = new SrgsItem();
+                    SrgsOneOf srgsOneOf = new SrgsOneOf();
+                    srgsOneOf.Add(new SrgsItem("Wyświetl"));
+                    srgsOneOf.Add(new SrgsItem("Pokaż"));
+                    srgsOneOf.Add(new SrgsItem("Wybierz"));
+                    movieSrgsItem.Add(srgsOneOf);
+                    movieSrgsItem.Add(new SrgsItem(0, 1, "film"));
 
                     SrgsItem phraseSrgsItem = new SrgsItem();
-                    phraseSrgsItem.Add(genreSrgsItem);
+                    phraseSrgsItem.Add(movieSrgsItem);
                     phraseSrgsItem.Add(movieSrgsOneOf);
 
                     movieSrgsRule = new SrgsRule("movie", phraseSrgsItem);
