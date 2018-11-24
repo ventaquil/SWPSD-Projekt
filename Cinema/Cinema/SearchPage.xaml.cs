@@ -64,7 +64,14 @@ namespace Cinema
             InitializeComboBoxes();
         }
 
-        protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
+        protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection srgsRules)
+        {
+            AddGenresSpeechGrammarRulers(srgsRules);
+
+            AddMoviesSpeechGrammarRules(srgsRules);
+        }
+
+        private void AddGenresSpeechGrammarRulers(SrgsRulesCollection srgsRules)
         {
             SrgsRule genreSrgsRule;
 
@@ -90,15 +97,63 @@ namespace Cinema
                 genreSrgsRule = new SrgsRule("genre", phraseSrgsItem);
             }
 
-            rules.Add(genreSrgsRule);
+            srgsRules.Add(genreSrgsRule);
 
             {
                 SrgsItem srgsItem = new SrgsItem();
                 srgsItem.Add(new SrgsRuleRef(genreSrgsRule));
 
-                SrgsRule rootSrgsRule = rules.Where(rule => rule.Id == "root").First();
+                SrgsRule rootSrgsRule = srgsRules.Where(rule => rule.Id == "root").First();
                 SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
                 srgsOneOf.Add(srgsItem);
+            }
+        }
+
+        private void AddMoviesSpeechGrammarRules(SrgsRulesCollection srgsRules)
+        {
+            Movie[] movies = null;
+
+            DispatchSync(() =>
+            {
+                movies = GetMovies();
+            });
+
+            if ((movies != null) && (movies.Length > 0))
+            {
+                SrgsRule movieSrgsRule;
+
+                {
+                    SrgsOneOf movieSrgsOneOf = new SrgsOneOf();
+
+                    int i = 0;
+                    foreach (Movie movie in movies)
+                    {
+                        SrgsItem srgsItem = new SrgsItem(movie.Name);
+                        srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"search.movies." + i++ + "\";"));
+
+                        movieSrgsOneOf.Add(srgsItem);
+                    }
+
+                    SrgsItem genreSrgsItem = new SrgsItem("Wybierz");
+                    genreSrgsItem.Add(new SrgsItem(0, 1, "film"));
+
+                    SrgsItem phraseSrgsItem = new SrgsItem();
+                    phraseSrgsItem.Add(genreSrgsItem);
+                    phraseSrgsItem.Add(movieSrgsOneOf);
+
+                    movieSrgsRule = new SrgsRule("movie", phraseSrgsItem);
+                }
+
+                srgsRules.Add(movieSrgsRule);
+
+                {
+                    SrgsItem srgsItem = new SrgsItem();
+                    srgsItem.Add(new SrgsRuleRef(movieSrgsRule));
+
+                    SrgsRule rootSrgsRule = srgsRules.Where(rule => rule.Id == "root").First();
+                    SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
+                    srgsOneOf.Add(srgsItem);
+                }
             }
         }
 
@@ -243,6 +298,8 @@ namespace Cinema
 
             if (!ResultsListBox.Items.IsEmpty)
             {
+                ReloadGrammars();
+
                 ResultsListBox.Focus();
             }
         }
