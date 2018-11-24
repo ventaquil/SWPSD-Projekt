@@ -129,7 +129,7 @@ namespace Cinema
                     foreach (Movie movie in movies)
                     {
                         SrgsItem srgsItem = new SrgsItem(movie.Name);
-                        srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"search.movies." + i++ + "\";"));
+                        srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"movies." + i++ + "\";"));
 
                         movieSrgsOneOf.Add(srgsItem);
                     }
@@ -226,7 +226,11 @@ namespace Cinema
                     break;
             }
 
-            if ((query != null) && ((Movies == null) || (query != MovieLatestQuery)))
+            if (query == null)
+            {
+                Movies = null;
+            }
+            else if ((Movies == null) || (query != MovieLatestQuery)) // query != null
             {
                 List<Movie> movies = new List<Movie>();
 
@@ -281,9 +285,19 @@ namespace Cinema
 
         private void ResultsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (string.Format("{0}", ResultsListBox.SelectedItem).Length > 0)
+            ShowDescription(ResultsListBox.SelectedIndex);
+        }
+
+        private void ShowDescription(int movieIndex)
+        {
+            try
             {
-                new DescriptionWindow(window, this, sqlConnectionFactory, string.Format("{0}", ResultsListBox.SelectedItem)).Show();
+                Movie movie = GetMovies()[movieIndex];
+                DescriptionWindow descriptionWindow = new DescriptionWindow(window, this, sqlConnectionFactory, movie.Name);
+                descriptionWindow.Show();
+            }
+            catch (IndexOutOfRangeException)
+            {
             }
         }
 
@@ -291,15 +305,18 @@ namespace Cinema
         {
             ResultsListBox.Items.Clear();
 
-            foreach (Movie movie in GetMovies())
+            if (GetMovies()?.Length > 0)
             {
-                ResultsListBox.Items.Add(movie.Name);
+                foreach (Movie movie in GetMovies())
+                {
+                    ResultsListBox.Items.Add(movie.Name);
+                }
             }
+
+            ReloadGrammars();
 
             if (!ResultsListBox.Items.IsEmpty)
             {
-                ReloadGrammars();
-
                 ResultsListBox.Focus();
             }
         }
@@ -351,6 +368,9 @@ namespace Cinema
                             break;
                         case "help":
                             SpeakHelp();
+                            break;
+                        case "movies":
+                            ShowDescription(int.Parse(command.Skip(1).First()));
                             break;
                         case "search":
                             switch (command.Skip(1).First())
