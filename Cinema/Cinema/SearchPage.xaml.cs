@@ -255,8 +255,9 @@ namespace Cinema
                 }
 
                 Movies = movies.ToArray();
-                MovieLatestQuery = query;
             }
+
+            MovieLatestQuery = query;
 
             return Movies;
         }
