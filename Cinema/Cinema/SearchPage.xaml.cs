@@ -189,7 +189,7 @@ namespace Cinema
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        sqlCommand.CommandText = "select genre from Genres";
+                        sqlCommand.CommandText = "SELECT genre FROM Genres";
 
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                         while (sqlDataReader.Read())
@@ -217,19 +217,18 @@ namespace Cinema
             switch (CategoryComboBox.SelectedIndex)
             {
                 case 0:
-                    query = "select distinct Movies.title, CONVERT(VARCHAR(MAX), Movies.description) AS description " +
-                        "from Movies, Screenings " +
-                        "where Movies.id = Screenings.movieID and " +
-                        "Screenings.screeningDate = CONVERT(date,  GETDATE())";
+                    query = "SELECT DISTINCT Movies.title, CONVERT(VARCHAR(MAX), Movies.description) AS description " +
+                        "FROM Movies, Screenings " +
+                        "WHERE (Movies.id = Screenings.movieID) AND (Screenings.screeningDate = CONVERT(date, GETDATE()))";
                     break;
                 case 1:
                     if (GenreComboBox.SelectedItem != null)
                     {
-                        query = "execute procedure_GetMoviesByGenre " + string.Format("'{0}'", GenreComboBox.SelectedItem);
+                        query = "EXECUTE procedure_GetMoviesByGenre " + string.Format("'{0}'", GenreComboBox.SelectedItem);
                     }
                     break;
                 case 2:
-                    query = "execute procedure_MostPopularMovies";
+                    query = "EXECUTE procedure_MostPopularMovies";
                     break;
             }
 
