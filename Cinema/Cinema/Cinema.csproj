@@ -214,6 +214,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\DescriptionPage.srgs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\MainPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
