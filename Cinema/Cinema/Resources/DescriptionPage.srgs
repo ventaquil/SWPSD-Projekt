@@ -11,6 +11,10 @@
         <tag>help</tag>
       </item>
       <item>
+        <ruleref uri="#order" />
+        <tag>order</tag>
+      </item>
+      <item>
         <ruleref uri="#quit" />
         <tag>quit</tag>
       </item>
@@ -27,6 +31,19 @@
 
   <rule id="help">
     <item>Pomoc</item>
+  </rule>
+
+  <rule id="order">
+    <item>
+      <item>
+        <one-of>
+          <item>Kup</item>
+          <item>Zamów</item>
+          <item>Zarezerwuj</item>
+        </one-of>
+      </item>
+      <item repeat="0-1">bilet</item>
+    </item>
   </rule>
 
   <rule id="quit">

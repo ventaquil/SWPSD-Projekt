@@ -43,10 +43,15 @@ namespace Cinema
 
             DescriptionTextBox.Text = Movie.Description;
         }
+        
+        private void Order()
+        {
+            ChangePage(new MovieHoursPage(window, previousPage, sqlConnectionFactory, Movie));
+        }
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
         {
-            ChangePage(new MovieHoursPage(window, previousPage, sqlConnectionFactory, Movie));
+            Order();
         }
         
         private void SpeakHelp()
@@ -86,6 +91,9 @@ namespace Cinema
                             break;
                         case "help":
                             SpeakHelp();
+                            break;
+                        case "order":
+                            Order();
                             break;
                         case "quit":
                             SpeakQuit();
