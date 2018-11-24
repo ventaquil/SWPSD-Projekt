@@ -56,7 +56,8 @@ namespace Cinema
         
         private void SpeakHelp()
         {
-            Speak("Pomoc");
+            Speak("Aby zamówić bilet powiedz ZAMÓW BILET.");
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
