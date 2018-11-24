@@ -306,6 +306,7 @@ namespace Cinema
             try
             {
                 Movie movie = GetMovies()[movieIndex];
+                // TODO some method to smartly create window - disable speech recognition and enable on focus on
                 DescriptionWindow descriptionWindow = new DescriptionWindow(window, this, sqlConnectionFactory, movie.Name, movie.Description);
                 descriptionWindow.Show();
                 descriptionWindow.Focus();
