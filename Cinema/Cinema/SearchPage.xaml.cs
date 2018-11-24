@@ -34,6 +34,16 @@ namespace Cinema
             }
         };
 
+        public class Movie
+        {
+            public readonly string Name;
+
+            public Movie(string name)
+            {
+                Name = name;
+            }
+        }
+
         private static string[] Categories =
         {
             "Wszystkie",
@@ -42,6 +52,10 @@ namespace Cinema
         };
 
         private Genre[] Genres;
+
+        private Movie[] Movies;
+
+        private string MovieLatestQuery;
 
         public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
@@ -134,6 +148,60 @@ namespace Cinema
             return Genres;
         }
 
+        public Movie[] GetMovies()
+        {
+            string query = null;
+
+            switch (CategoryComboBox.SelectedIndex)
+            {
+                case 0:
+                    query = "select distinct Movies.title " +
+                        "from Movies, Screenings " +
+                        "where Movies.id = Screenings.movieID and " +
+                        "Screenings.screeningDate = CONVERT(date,  GETDATE())";
+                    break;
+                case 1:
+                    if (GenreComboBox.SelectedItem != null)
+                    {
+                        query = "execute procedure_GetMoviesByGenre " + string.Format("'{0}'", GenreComboBox.SelectedItem);
+                    }
+                    break;
+                case 2:
+                    query = "execute procedure_MostPopularMovies";
+                    break;
+            }
+
+            if ((query != null) && ((Movies == null) || (query != MovieLatestQuery)))
+            {
+                List<Movie> movies = new List<Movie>();
+
+                using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
+                {
+                    sqlConnection.Open();
+
+                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
+                    {
+                        sqlCommand.CommandText = query;
+
+                        SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                        while (sqlDataReader.Read())
+                        {
+                            string name = string.Format("{0}", sqlDataReader[0]);
+                            movies.Add(new Movie(name));
+                        }
+                        sqlDataReader.Close();
+                    }
+
+                    sqlConnection.Close();
+                }
+
+                Movies = movies.ToArray();
+                MovieLatestQuery = query;
+            }
+
+            return Movies;
+        }
+
         private void InitializeComboBoxes()
         {
             foreach (string category in Categories)
@@ -168,48 +236,14 @@ namespace Cinema
         {
             ResultsListBox.Items.Clear();
 
-            if (CategoryComboBox.SelectedItem != null)
+            foreach (Movie movie in GetMovies())
             {
-                using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
-                {
-                    sqlConnection.Open();
+                ResultsListBox.Items.Add(movie.Name);
+            }
 
-                    using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                    {
-                        switch (CategoryComboBox.SelectedIndex)
-                        {
-                            case 0:
-                                sqlCommand.CommandText = "select distinct Movies.title " +
-                                    "from Movies, Screenings " +
-                                    "where Movies.id = Screenings.movieID and " +
-                                    "Screenings.screeningDate = CONVERT(date,  GETDATE())";
-                                break;
-                            case 1:
-                                if (GenreComboBox.SelectedItem != null)
-                                {
-                                    sqlCommand.CommandText = "execute procedure_GetMoviesByGenre " + string.Format("'{0}'", GenreComboBox.SelectedItem);
-                                }
-                                break;
-                            case 2:
-                                sqlCommand.CommandText = "execute procedure_MostPopularMovies";
-                                break;
-                        }
-
-                        if (sqlCommand.CommandText.Length > 0)
-                        {
-                            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                            while (sqlDataReader.Read())
-                            {
-                                ResultsListBox.Items.Add(string.Format("{0}", sqlDataReader[0]));
-                            }
-                            sqlDataReader.Close();
-
-                            ResultsListBox.Focus();
-                        }
-                    }
-
-                    sqlConnection.Close();
-                }
+            if (!ResultsListBox.Items.IsEmpty)
+            {
+                ResultsListBox.Focus();
             }
         }
 
