@@ -226,6 +226,9 @@
     <None Include="Resources\MovieHoursPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\MovieSeatsPage.srgs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\OrderPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

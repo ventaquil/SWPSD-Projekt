@@ -81,6 +81,11 @@ namespace Cinema
 
         private void Seat_Click(object sender, RoutedEventArgs e)
         {
+            PerformAction();
+        }
+
+        public void PerformAction()
+        {
             if (taken)
             {
                 MessageBox.Show("To miejsce jest już zajęte!");
@@ -89,6 +94,16 @@ namespace Cinema
             {
                 window.Content = new TicketDataPage(window, lastPage, sqlConnectionFactory, screeningId, rowNo, seatNo, ticketWindow);
             }
+        }
+
+        public int GetRowNo()
+        {
+            return this.rowNo;
+        }
+
+        public int GetSeatNo()
+        {
+            return this.seatNo;
         }
     }
 }

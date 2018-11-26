@@ -187,16 +187,9 @@ namespace Cinema
 
         private void ListMovies()
         {
-            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
+            foreach(Movie movie in GetMovies())
             {
-                sqlConnection.Open();
-
-                foreach(Movie movie in GetMovies())
-                {
-                    MoviesListBox.Items.Add(movie.Name);
-                }
-
-                sqlConnection.Close();
+                MoviesListBox.Items.Add(movie.Name);
             }
         }
 

@@ -259,19 +259,10 @@ namespace Cinema
 
         private void ListHours()
         {
-            screeningId = new List<int>();
-
-            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
+            GetScreeningsTime();
+            foreach(ScreeningData data in ScreeningsData)
             {
-                sqlConnection.Open();
-
-                GetScreeningsTime();
-                foreach(ScreeningData data in ScreeningsData)
-                {
-                    HoursListBox.Items.Add(data.Data);
-                }
-
-                sqlConnection.Close();
+                HoursListBox.Items.Add(data.Data);
             }
         }
 
