@@ -1,4 +1,4 @@
-﻿<local:Page x:Class="Cinema.OrderPage"
+﻿<local:SpeechPage x:Class="Cinema.OrderPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -91,4 +91,4 @@
                  x:Name="MoviesListBox" MouseDoubleClick="MoviesListBox_MouseDoubleClick"/>
 
     </Grid>
-</local:Page>
+</local:SpeechPage>

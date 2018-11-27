@@ -26,6 +26,8 @@ namespace Cinema
 
         private static string ConnectionString = "Data Source=(localDB)\\MSSQLLocalDB; AttachDbFilename=" + DatabasePath;
 
+        private readonly Window ticketsWindow;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -37,15 +39,18 @@ namespace Cinema
 
                 ExecuteCreateQueries();
             }
-            
-            Content = new MainPage(this, CreateSqlConnectionFactory());
+
+            SqlConnectionFactory sqlConnectionFactory = CreateSqlConnectionFactory();
+
+            ticketsWindow = new TicketsLogWindow(sqlConnectionFactory);
+            Content = new MainPage(this, sqlConnectionFactory, ticketsWindow);
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
         public SqlConnectionFactory CreateSqlConnectionFactory()
         {
-            return new SqlConnectionFactory(ConnectionString); 
+            return new SqlConnectionFactory(ConnectionString);
         }
 
         public void CreateSqlDatabase()
@@ -107,6 +112,11 @@ namespace Cinema
                     }
                 }
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ticketsWindow.Close();
         }
     }
 }

@@ -25,9 +25,9 @@ namespace Cinema
         private int rowNo, screeningId, seatNo;
         private SqlConnectionFactory sqlConnectionFactory;
         private bool taken;
-        private Window window;
+        private Window window, ticketWindow;
 
-        public SeatButton(Window window, Page lastPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int rowNo, int seatNo)
+        public SeatButton(Window window, Page lastPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int rowNo, int seatNo, Window ticketWindow)
         {
             this.window = window;
             this.lastPage = lastPage;
@@ -35,6 +35,7 @@ namespace Cinema
             this.screeningId = screeningId;
             this.rowNo = rowNo;
             this.seatNo = seatNo;
+            this.ticketWindow = ticketWindow;
 
             InitializeComponent();
 
@@ -80,14 +81,29 @@ namespace Cinema
 
         private void Seat_Click(object sender, RoutedEventArgs e)
         {
+            PerformAction();
+        }
+
+        public void PerformAction()
+        {
             if (taken)
             {
                 MessageBox.Show("To miejsce jest już zajęte!");
             }
             else
             {
-                window.Content = new TicketDataPage(window, lastPage, sqlConnectionFactory, screeningId, rowNo, seatNo);
+                window.Content = new TicketDataPage(window, lastPage, sqlConnectionFactory, screeningId, rowNo, seatNo, ticketWindow);
             }
+        }
+
+        public int GetRowNo()
+        {
+            return this.rowNo;
+        }
+
+        public int GetSeatNo()
+        {
+            return this.seatNo;
         }
     }
 }

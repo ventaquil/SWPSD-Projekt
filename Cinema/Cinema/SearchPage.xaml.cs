@@ -64,7 +64,7 @@ namespace Cinema
 
         private string MovieLatestQuery;
 
-        public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
+        public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
         {
             InitializeComponent();
 
@@ -307,7 +307,7 @@ namespace Cinema
             {
                 Movie movie = GetMovies()[movieIndex];
                 // TODO some method to smartly create window - disable speech recognition and enable on focus on
-                DescriptionWindow descriptionWindow = new DescriptionWindow(window, this, sqlConnectionFactory, movie.Name, movie.Description);
+                DescriptionWindow descriptionWindow = new DescriptionWindow(window, this, sqlConnectionFactory, ticketWindow, movie.Name, movie.Description);
                 descriptionWindow.Show();
                 descriptionWindow.Focus();
             }
