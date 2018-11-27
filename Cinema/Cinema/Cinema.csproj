@@ -265,6 +265,7 @@
   <ItemGroup>
     <Content Include="Properties\Queries\DropTables.sql" />
     <Content Include="Properties\Queries\Procedures\GetMoviesByGenre.sql" />
+    <Content Include="Properties\Queries\Procedures\GetTicketsInfoList.sql" />
     <Content Include="Properties\Queries\Procedures\MostPopularMovies.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

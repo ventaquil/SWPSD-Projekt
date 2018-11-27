@@ -124,6 +124,9 @@
   <data name="GetMoviesByGenre" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Queries\Procedures\GetMoviesByGenre.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="GetTicketsInfoList" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Queries\Procedures\GetTicketsInfoList.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="Inserts" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Queries\Inserts.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

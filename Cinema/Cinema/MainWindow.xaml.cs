@@ -92,6 +92,7 @@ namespace Cinema
                     Properties.Resources.CreateTables,
                     Properties.Resources.Inserts,
                     Properties.Resources.GetMoviesByGenre,
+                    Properties.Resources.GetTicketsInfoList,
                     Properties.Resources.MostPopularMovies
                 };
 
