@@ -39,6 +39,44 @@ namespace Cinema
             ListMovies();
         }
 
+        protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
+        {
+            SrgsRule movieSrgsRule;
+
+            {
+                SrgsOneOf movieSrgsOneOf = new SrgsOneOf();
+
+                int i = 0;
+                foreach (Movie movie in GetMovies())
+                {
+                    SrgsItem srgsItem = new SrgsItem(movie.Name);
+                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"movie." + i++ + "\";"));
+
+                    movieSrgsOneOf.Add(srgsItem);
+                }
+
+                SrgsItem movieSrgsItem = new SrgsItem(0, 1, "Wybierz");
+                movieSrgsItem.Add(new SrgsItem(0, 1, "film"));
+
+                SrgsItem phraseSrgsItem = new SrgsItem();
+                phraseSrgsItem.Add(movieSrgsItem);
+                phraseSrgsItem.Add(movieSrgsOneOf);
+
+                movieSrgsRule = new SrgsRule("movie", phraseSrgsItem);
+            }
+
+            rules.Add(movieSrgsRule);
+
+            {
+                SrgsItem srgsItem = new SrgsItem();
+                srgsItem.Add(new SrgsRuleRef(movieSrgsRule));
+
+                SrgsRule rootSrgsRule = rules.Where(rule => rule.Id == "root").First();
+                SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
+                srgsOneOf.Add(srgsItem);
+            }
+        }
+
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             MoveBack();
@@ -80,49 +118,40 @@ namespace Cinema
             return Movies;
         }
 
-        protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
-        {
-            SrgsRule movieSrgsRule;
-
-            {
-                SrgsOneOf movieSrgsOneOf = new SrgsOneOf();
-
-                int i = 0;
-                foreach (Movie movie in GetMovies())
-                {
-                    SrgsItem srgsItem = new SrgsItem(movie.Name);
-                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"movie." + i++ + "\";"));
-
-                    movieSrgsOneOf.Add(srgsItem);
-                }
-
-                SrgsItem movieSrgsItem = new SrgsItem(0, 1, "Wybierz");
-                movieSrgsItem.Add(new SrgsItem(0, 1, "film"));
-
-                SrgsItem phraseSrgsItem = new SrgsItem();
-                phraseSrgsItem.Add(movieSrgsItem);
-                phraseSrgsItem.Add(movieSrgsOneOf);
-
-                movieSrgsRule = new SrgsRule("movie", phraseSrgsItem);
-            }
-
-            rules.Add(movieSrgsRule);
-
-            {
-                SrgsItem srgsItem = new SrgsItem();
-                srgsItem.Add(new SrgsRuleRef(movieSrgsRule));
-
-                SrgsRule rootSrgsRule = rules.Where(rule => rule.Id == "root").First();
-                SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
-                srgsOneOf.Add(srgsItem);
-            }
-        }
-
         public override void InitializeSpeech(object sender, DoWorkEventArgs e)
         {
             base.InitializeSpeech(sender, e);
 
             SpeakHello();
+        }
+
+        private void ListMovies()
+        {
+            foreach (Movie movie in GetMovies())
+            {
+                MoviesListBox.Items.Add(movie.Name);
+            }
+        }
+
+        private void MoviesListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            OrderMovie(MoviesListBox.SelectedIndex);
+        }
+
+        private void OrderMovie(int index)
+        {
+            try
+            {
+                OrderMovie(GetMovies()[index]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+            }
+        }
+
+        private void OrderMovie(Movie movie)
+        {
+            ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, movie));
         }
 
         private void SpeakHello()
@@ -166,17 +195,7 @@ namespace Cinema
                             MoveBack();
                             break;
                         case "movie":
-                            try
-                            {
-                                int movieIndex = int.Parse(command.Skip(1).First());
-
-                                Movie movie = GetMovies()[movieIndex];
-
-                                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, movie));
-                            }
-                            catch (IndexOutOfRangeException)
-                            {
-                            }
+                            OrderMovie(int.Parse(command.Skip(1).First()));
                             break;
                         case "help":
                             SpeakHelp();
@@ -187,27 +206,6 @@ namespace Cinema
                             break;
                     }
                 });
-            }
-        }
-
-        private void ListMovies()
-        {
-            foreach (Movie movie in GetMovies())
-            {
-                MoviesListBox.Items.Add(movie.Name);
-            }
-        }
-
-        private void MoviesListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                Movie movie = GetMovies()[MoviesListBox.SelectedIndex];
-
-                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, movie));
-            }
-            catch (IndexOutOfRangeException)
-            {
             }
         }
     }
