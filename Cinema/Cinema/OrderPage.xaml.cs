@@ -23,16 +23,6 @@ namespace Cinema
     /// </summary>
     public partial class OrderPage : SpeechPage
     {
-        public class Movie
-        {
-            public readonly String Name;
-
-            public Movie(String name)
-            {
-                Name = name;
-            }
-        };
-
         private static string[] categories =
         {
             "Wszystkie",
@@ -42,11 +32,16 @@ namespace Cinema
 
         private Movie[] Movies;
 
-        public OrderPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
+        public OrderPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
 
             ListMovies();
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveBack();
         }
 
         public Movie[] GetMovies()
@@ -61,17 +56,17 @@ namespace Cinema
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        sqlCommand.CommandText = "select distinct Movies.title " +
-                            "from Movies, Screenings " +
-                            "where Movies.id = Screenings.movieID " +
-                            "and Screenings.screeningDate = CONVERT(date,  GETDATE())";
+                        sqlCommand.CommandText = "SELECT DISTINCT Movies.title, CONVERT(VARCHAR(MAX), Movies.description) " +
+                            "FROM Movies, Screenings " +
+                            "WHERE (Movies.id = Screenings.movieID) AND (Screenings.screeningDate = CONVERT(date, GETDATE()))";
 
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                         while (sqlDataReader.Read())
                         {
                             string name = string.Format("{0}", sqlDataReader[0]);
+                            string description = string.Format("{0}", sqlDataReader[1]);
 
-                            movies.Add(new Movie(name));
+                            movies.Add(new Movie(name, description));
                         }
                         sqlDataReader.Close();
                     }
@@ -165,13 +160,23 @@ namespace Cinema
                 string[] command = result.Semantics.Value.ToString().ToLower().Split('.');
                 DispatchAsync(() =>
                 {
-                    switch (command.First()) // TODO show info about movie
+                    switch (command.First())
                     {
                         case "back":
                             MoveBack();
                             break;
                         case "movie":
-                            ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, String.Format("{0}", MoviesListBox.Items.GetItemAt(int.Parse(command[1]))), ticketWindow));
+                            try
+                            {
+                                int movieIndex = int.Parse(command.Skip(1).First());
+
+                                Movie movie = GetMovies()[movieIndex];
+
+                                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, movie));
+                            }
+                            catch (IndexOutOfRangeException)
+                            {
+                            }
                             break;
                         case "help":
                             SpeakHelp();
@@ -187,22 +192,22 @@ namespace Cinema
 
         private void ListMovies()
         {
-            foreach(Movie movie in GetMovies())
+            foreach (Movie movie in GetMovies())
             {
                 MoviesListBox.Items.Add(movie.Name);
             }
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            MoveBack();
-        }
-
         private void MoviesListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!String.Format("{0}", MoviesListBox.SelectedItem).Equals(""))
+            try
             {
-                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, String.Format("{0}", MoviesListBox.SelectedItem), ticketWindow));
+                Movie movie = GetMovies()[MoviesListBox.SelectedIndex];
+
+                ChangePage(new MovieHoursPage(window, this, sqlConnectionFactory, movie));
+            }
+            catch (IndexOutOfRangeException)
+            {
             }
         }
     }

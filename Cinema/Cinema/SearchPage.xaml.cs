@@ -34,23 +34,6 @@ namespace Cinema
             }
         };
 
-        public class Movie
-        {
-            public readonly string Description;
-
-            public readonly string Name;
-
-            public Movie(string name)
-            {
-                Name = name;
-            }
-
-            public Movie(string name, string description) : this(name)
-            {
-                Description = description;
-            }
-        }
-
         private static string[] Categories =
         {
             "Wszystkie",
@@ -64,7 +47,7 @@ namespace Cinema
 
         private string MovieLatestQuery;
 
-        public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
+        public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
 
@@ -258,6 +241,7 @@ namespace Cinema
                         {
                             string name = string.Format("{0}", sqlDataReader[0]);
                             string description = string.Format("{0}", sqlDataReader[1]);
+
                             movies.Add(new Movie(name, description));
                         }
                         sqlDataReader.Close();
@@ -306,10 +290,8 @@ namespace Cinema
             try
             {
                 Movie movie = GetMovies()[movieIndex];
-                // TODO some method to smartly create window - disable speech recognition and enable on focus on
-                DescriptionWindow descriptionWindow = new DescriptionWindow(window, this, sqlConnectionFactory, ticketWindow, movie.Name, movie.Description);
-                descriptionWindow.Show();
-                descriptionWindow.Focus();
+
+                ChangePage(new DescriptionPage(window, this, sqlConnectionFactory, movie));
             }
             catch (IndexOutOfRangeException)
             {
@@ -381,7 +363,7 @@ namespace Cinema
                 string[] command = result.Semantics.Value.ToString().ToLower().Split('.');
                 DispatchAsync(() =>
                 {
-                    switch (command.First()) // TODO show info about movie
+                    switch (command.First())
                     {
                         case "back":
                             MoveBack();

@@ -87,21 +87,19 @@ namespace Cinema
 
         private ScreeningData[] ScreeningsData;
         private ScreeningTime[] ScreeningsTime;
-
-        private String movieTitle;
+        
+        private Movie Movie;
 
         private List<int> screeningId;
 
-        public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, String movieTitle, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
+        public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Movie movie) : base(window, previousPage, sqlConnectionFactory)
         {
-            this.movieTitle = movieTitle;
-
             InitializeComponent();
+
+            Movie = movie;
 
             ListHours();
         }
-
-        
 
         public ScreeningTime[] GetScreeningsTime()
         {
@@ -120,18 +118,18 @@ namespace Cinema
                         sqlCommand.CommandText = "select distinct Screenings.id, Movies.title, Screenings.auditoriumID, Screenings.screeningTime " +
                             "from Movies, Screenings " +
                             "where Movies.id = Screenings.movieID " +
-                            "and Movies.title = '" + movieTitle +
+                            "and Movies.title = '" + Movie.Name +
                             "' and Screenings.screeningDate = CONVERT(date,  GETDATE())";
 
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                         while (sqlDataReader.Read())
                         {
-                            screeningId.Add(int.Parse(String.Format("{0}", sqlDataReader[0])));
+                            screeningId.Add(int.Parse(string.Format("{0}", sqlDataReader[0])));
 
-                            string[] hourDivided = String.Format("{0}", sqlDataReader[3]).Split(':');
+                            string[] hourDivided = string.Format("{0}", sqlDataReader[3]).Split(':');
                             string hour = hourDivided[0] + ":" + hourDivided[1];
 
-                            string data = String.Format("{0} \t sala {1} \t godzina {2}", sqlDataReader[1], sqlDataReader[2], hour);
+                            string data = string.Format("{0} \t sala {1} \t godzina {2}", sqlDataReader[1], sqlDataReader[2], hour);
 
                             screeningsData.Add(new ScreeningData(data));
                             screeningsTime.Add(new ScreeningTime(hourDivided[0], hourDivided[1]));
@@ -243,7 +241,7 @@ namespace Cinema
                             MoveBack();
                             break;
                         case "time":
-                            ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[int.Parse(command[1])], ticketWindow));
+                            ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[int.Parse(command[1])]));
                             break;
                         case "help":
                             SpeakHelp();
@@ -260,7 +258,7 @@ namespace Cinema
         private void ListHours()
         {
             GetScreeningsTime();
-            foreach(ScreeningData data in ScreeningsData)
+            foreach (ScreeningData data in ScreeningsData)
             {
                 HoursListBox.Items.Add(data.Data);
             }
@@ -273,9 +271,9 @@ namespace Cinema
 
         private void HoursListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!String.Format("{0}", HoursListBox.SelectedItem).Equals(""))
+            if (!string.Format("{0}", HoursListBox.SelectedItem).Equals(""))
             {
-                ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[HoursListBox.SelectedIndex], ticketWindow));
+                ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[HoursListBox.SelectedIndex]));
             }
         }
     }

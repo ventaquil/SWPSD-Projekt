@@ -36,7 +36,7 @@ namespace Cinema
             "Cena: "
         };
 
-        public SummaryPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int seatId, int priceId, float price, string bookerName, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
+        public SummaryPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int seatId, int priceId, float price, string bookerName) : base(window, previousPage, sqlConnectionFactory)
         {
             this.screeningId = screeningId;
             this.seatId = seatId;
@@ -127,7 +127,7 @@ namespace Cinema
 
             MessageBox.Show("Bilet został zamówiony!");
 
-            ChangePage(new MainPage(window, sqlConnectionFactory, ticketWindow));
+            ChangePage(new MainPage(window, sqlConnectionFactory));
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

@@ -19,15 +19,15 @@ namespace Cinema
 
         private SpeechSynthesizer speechSynthesizer;
 
-        public SpeechPage() : this(null, null, null, null)
+        public SpeechPage() : this(null, null, null)
         {
         }
 
-        public SpeechPage(Window window, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : this(window, null, sqlConnectionFactory, ticketWindow)
+        public SpeechPage(Window window, SqlConnectionFactory sqlConnectionFactory) : this(window, null, sqlConnectionFactory)
         {
         }
 
-        public SpeechPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
+        public SpeechPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             ExecuteBackgroundAction(InitializeSpeech);
         }
@@ -69,7 +69,6 @@ namespace Cinema
 
         public Grammar GetSpeechGrammar()
         {
-            Console.WriteLine(GetType().Name);
             SrgsDocument srgsDocument = new SrgsDocument("./Resources/" + GetType().Name + ".srgs");
 
             AddCustomSpeechGrammarRules(srgsDocument.Rules);

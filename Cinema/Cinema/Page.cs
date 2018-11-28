@@ -14,25 +14,23 @@ namespace Cinema
 
         protected readonly SqlConnectionFactory sqlConnectionFactory;
 
-        protected readonly Window window, ticketWindow;
+        protected readonly Window window;
 
         public Page() : base()
         {
         }
 
-        public Page(Window window, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : this(window, null, sqlConnectionFactory, ticketWindow)
+        public Page(Window window, SqlConnectionFactory sqlConnectionFactory) : this(window, null, sqlConnectionFactory)
         {
         }
 
-        public Page(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Window ticketWindow) : this()
+        public Page(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : this()
         {
             this.window = window;
 
             this.previousPage = previousPage;
 
             this.sqlConnectionFactory = sqlConnectionFactory;
-
-            this.ticketWindow = ticketWindow;
         }
 
         protected void ChangePage(Page page)
@@ -60,7 +58,6 @@ namespace Cinema
         protected void Close()
         {
             window.Close();
-            ticketWindow.Close();
         }
 
         protected void MoveBack()

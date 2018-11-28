@@ -26,7 +26,7 @@ namespace Cinema
     {
         private int screeningId;
 
-        public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, Window ticketWindow) : base(window, previousPage, sqlConnectionFactory, ticketWindow)
+        public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId) : base(window, previousPage, sqlConnectionFactory)
         {
             this.screeningId = screeningId;
 
@@ -135,7 +135,7 @@ namespace Cinema
                             
                             //Creating UI comps has to be done by STA thread, otherwise ecxeption is thrown
                             DispatchSync(() =>
-                                seats.Add(new Seat(new SeatButton(window, previousPage, sqlConnectionFactory, screeningId, rowNo, seatNo, ticketWindow))));
+                                seats.Add(new Seat(new SeatButton(window, previousPage, sqlConnectionFactory, screeningId, rowNo, seatNo))));
                         }
                         sqlDataReader.Close();
                     }

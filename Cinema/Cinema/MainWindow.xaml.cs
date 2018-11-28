@@ -43,7 +43,7 @@ namespace Cinema
             SqlConnectionFactory sqlConnectionFactory = CreateSqlConnectionFactory();
 
             ticketsWindow = new TicketsLogWindow(sqlConnectionFactory);
-            Content = new MainPage(this, sqlConnectionFactory, ticketsWindow);
+            Content = new MainPage(this, sqlConnectionFactory);
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
