@@ -39,7 +39,12 @@
           <item>Pokaż</item>
           <item>Wyświetl</item>
         </one-of>
-        <item repeat="0-1">dostępne</item>
+        <item repeat="0-1">
+          <one-of>
+            <item>dostępne</item>
+            <item>wszystkie</item>
+          </one-of>
+        </item>
         <item>gatunki</item>
         <tag>search.genres</tag>
       </item>
