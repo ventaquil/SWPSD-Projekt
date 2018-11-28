@@ -15,6 +15,8 @@ namespace Cinema
 {
     public class SpeechPage : Page, ISpeechRecognize, ISpeechSynthesis
     {
+        private CultureInfo CultureInfo = new CultureInfo("pl-PL");
+
         private SpeechRecognitionEngine speechRecognitionEngine;
 
         private SpeechSynthesizer speechSynthesizer;
@@ -87,9 +89,7 @@ namespace Cinema
 
         public void InitializeSpeechRecognition()
         {
-            CultureInfo cultureInfo = new CultureInfo("pl-PL");
-
-            speechRecognitionEngine = new SpeechRecognitionEngine(cultureInfo);
+            speechRecognitionEngine = new SpeechRecognitionEngine(CultureInfo);
             ReloadGrammars();
             speechRecognitionEngine.SetInputToDefaultAudioDevice();
             speechRecognitionEngine.SpeechRecognized += SpeechRecognitionEngine_SpeechRecognized;
@@ -120,11 +120,21 @@ namespace Cinema
 
         public void Speak(string message)
         {
+            PromptBuilder promptBuilder = new PromptBuilder(CultureInfo);
+            promptBuilder.AppendText(message);
+
+            Prompt prompt = new Prompt(promptBuilder);
+
+            Speak(prompt);
+        }
+
+        public void Speak(Prompt prompt)
+        {
             StopSpeechRecognition();
 
             try
             {
-                speechSynthesizer.Speak(message);
+                speechSynthesizer.Speak(prompt);
 
                 EnableSpeechRecognition();
             }
