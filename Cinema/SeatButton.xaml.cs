@@ -21,61 +21,25 @@ namespace Cinema
     /// </summary>
     public partial class SeatButton : UserControl
     {
-        private Page lastPage;
-        private int rowNo, screeningId, seatNo;
-        private SqlConnectionFactory sqlConnectionFactory;
-        private bool taken;
-        private Window window;
+        private Action Callback;
 
-        public SeatButton(Window window, Page lastPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int rowNo, int seatNo)
+        private Seat Seat;
+        
+        public SeatButton(Seat seat, Action callback)
         {
-            this.window = window;
-            this.lastPage = lastPage;
-            this.sqlConnectionFactory = sqlConnectionFactory;
-            this.screeningId = screeningId;
-            this.rowNo = rowNo;
-            this.seatNo = seatNo;
-
             InitializeComponent();
 
-            CheckIfTaken();
+            Seat = seat;
+            Callback = callback;
 
-            InitSeatButton();
+            InitializeSeatButton();
         }
 
-        private void CheckIfTaken()
+        private void InitializeSeatButton()
         {
-            using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
-            {
-                sqlConnection.Open();
+            MainButton.Content = "Rząd: " + Seat.Row + "\nMiejsce: " + Seat.No;
 
-                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                {
-                    sqlCommand.CommandText = "select count(Tickets.id) " +
-                        "from Tickets, Screenings, Seats " +
-                        "where Tickets.seatID = Seats.id and " +
-                        "Tickets.screeningID = Screenings.id and " +
-                        "Screenings.id = " + screeningId +
-                        "and Seats.rowNo = " + rowNo +
-                        "and Seats.seatNo = " + seatNo;
-
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                    sqlDataReader.Read();
-
-                    taken = (int.Parse(String.Format("{0}", sqlDataReader[0])) > 0);
-
-                    sqlDataReader.Close();
-                }
-
-                sqlConnection.Close();
-            }
-        }
-
-        private void InitSeatButton()
-        {
-            Seat.Content = "Rząd: " + rowNo + "\nMiejsce: " + seatNo;
-
-            Seat.Background = (taken) ? Brushes.Red : Brushes.Green;
+            MainButton.Background = Seat.Taken ? Brushes.Red : Brushes.Green;
         }
 
         private void Seat_Click(object sender, RoutedEventArgs e)
@@ -85,24 +49,14 @@ namespace Cinema
 
         public void PerformAction()
         {
-            if (taken)
+            if (Seat.Taken)
             {
                 MessageBox.Show("To miejsce jest już zajęte!");
             }
             else
             {
-                window.Content = new TicketDataPage(window, lastPage, sqlConnectionFactory, screeningId, rowNo, seatNo);
+                Callback();
             }
-        }
-
-        public int GetRowNo()
-        {
-            return this.rowNo;
-        }
-
-        public int GetSeatNo()
-        {
-            return this.seatNo;
         }
     }
 }

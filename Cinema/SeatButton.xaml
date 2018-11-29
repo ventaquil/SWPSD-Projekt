@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Button x:Name="Seat" Click="Seat_Click"
+        <Button x:Name="MainButton" Click="Seat_Click"
                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
                 BorderThickness="5" BorderBrush="PaleVioletRed"/>

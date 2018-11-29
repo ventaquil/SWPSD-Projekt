@@ -117,6 +117,7 @@
     <Compile Include="SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Seat.cs" />
     <Compile Include="SeatButton.xaml.cs">
       <DependentUpon>SeatButton.xaml</DependentUpon>
     </Compile>

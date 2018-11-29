@@ -24,7 +24,17 @@ namespace Cinema
     /// </summary>
     public partial class MovieSeatsPage : SpeechPage
     {
+        private int Columns;
+
+        private bool ColumnsSet = false;
+
+        private int Rows;
+
+        private bool RowsSet = false;
+
         private Screening Screening;
+
+        private Seat[] Seats;
 
         public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Screening screening) : base(window, previousPage, sqlConnectionFactory)
         {
@@ -35,80 +45,39 @@ namespace Cinema
             InitializeSeatsView();
         }
 
-        public class Seat
+        public int GetColumns()
         {
-            public static int Rows = 0, Cols = 0;
-            public SeatButton Button;
-            public readonly string SeatPositionTag;
-
-            public Seat(SeatButton button)
+            if (!ColumnsSet)
             {
-                Button = button;
-                //SeatPositionTag = "Rząd " + GetRowNoSpoken(button.GetRowNo()) + " miejsce " + GetSeatNoSpoken(button.GetSeatNo());
-                SeatPositionTag = "Rząd " + button.GetRowNo() + " miejsce " + button.GetSeatNo();
+                Columns = 0;
 
-                if (button.GetRowNo() > Rows) Rows = button.GetRowNo();
-                if (button.GetSeatNo() > Cols) Cols = button.GetSeatNo();
-            }
-
-            private string GetRowNoSpoken(int rowNo)
-            {
-                switch (rowNo)
+                foreach (Seat seat in GetSeats())
                 {
-                    case 1:
-                        return "pierwszy";
-                    case 2:
-                        return "drugi";
-                    case 3:
-                        return "trzeci";
-                    case 4:
-                        return "czwarty";
-                    case 5:
-                        return "piąty";
-                    case 6:
-                        return "szósty";
-                    case 7:
-                        return "siódmy";
-                    case 8:
-                        return "ósmy";
-                    case 9:
-                        return "dziewiąty";
-                    case 10:
-                        return "dziesiąty";
+                    Columns = Math.Max(Columns, seat.No);
                 }
-                return null;
+
+                ColumnsSet = true;
             }
 
-            private string GetSeatNoSpoken(int seatNo)
+            return Columns;
+        }
+
+        public int GetRows()
+        {
+            if (!RowsSet)
             {
-                switch (seatNo)
-                {
-                    case 1:
-                        return "pierwsze";
-                    case 2:
-                        return "drugie";
-                    case 3:
-                        return "trzecie";
-                    case 4:
-                        return "czwarte";
-                    case 5:
-                        return "piąte";
-                    case 6:
-                        return "szóste";
-                    case 7:
-                        return "siódme";
-                    case 8:
-                        return "ósme";
-                    case 9:
-                        return "dziewiąte";
-                    case 10:
-                        return "dziesiąte";
-                }
-                return null;
-            }
-        };
+                Rows = 0;
 
-        private Seat[] Seats;
+                foreach (Seat seat in GetSeats())
+                {
+                    Rows = Math.Max(Rows, seat.Row);
+                }
+
+                RowsSet = true;
+            }
+
+            return Rows;
+        }
 
         public Seat[] GetSeats()
         {
@@ -122,19 +91,19 @@ namespace Cinema
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        sqlCommand.CommandText = "SELECT Seats.rowNo, Seats.seatNo " +
-                            "FROM Seats, Auditoriums, Screenings " +
+                        sqlCommand.CommandText = "SELECT DISTINCT Seats.rowNo, Seats.seatNo, Tickets.id AS ticket " +
+                            "FROM Auditoriums, Screenings, " +
+                                "(Seats LEFT JOIN Tickets ON (Tickets.seatID = Seats.id) AND (Tickets.screeningID = " + Screening.Id + ")) " +
                             "WHERE (Seats.auditoriumID = Auditoriums.id) AND (Auditoriums.id = " + Screening.Auditorium + ")";
 
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                         while (sqlDataReader.Read())
                         {
-                            int rowNo = int.Parse(string.Format("{0}", sqlDataReader[0]));
-                            int seatNo = int.Parse(string.Format("{0}", sqlDataReader[1]));
-                            
-                            //Creating UI comps has to be done by STA thread, otherwise ecxeption is thrown
-                            DispatchSync(() =>
-                                seats.Add(new Seat(new SeatButton(window, previousPage, sqlConnectionFactory, Screening.Id, rowNo, seatNo))));
+                            int row = int.Parse(string.Format("{0}", sqlDataReader[0]));
+                            int no = int.Parse(string.Format("{0}", sqlDataReader[1]));
+                            bool taken = string.Format("{0}", sqlDataReader[2]) != string.Empty;
+
+                            seats.Add(new Seat(Screening, no, row, taken));
                         }
                         sqlDataReader.Close();
                     }
@@ -150,7 +119,6 @@ namespace Cinema
 
         protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
         {
-            
             SrgsRule movieSrgsRule;
 
             {
@@ -159,16 +127,14 @@ namespace Cinema
                 int i = 0;
                 foreach (Seat seat in GetSeats())
                 {
-                    SrgsItem srgsItem = new SrgsItem(seat.SeatPositionTag);
+                    SrgsItem srgsItem = new SrgsItem("Rząd " + seat.Row + " miejsce " + seat.No);
                     srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"seat." + i++ + "\";"));
 
                     movieSrgsOneOf.Add(srgsItem);
                 }
-
-                SrgsItem movieSrgsItem = new SrgsItem(0, 1, "Wybierz");
-
+                
                 SrgsItem phraseSrgsItem = new SrgsItem();
-                phraseSrgsItem.Add(movieSrgsItem);
+                phraseSrgsItem.Add(new SrgsItem(0, 1, "Wybierz"));
                 phraseSrgsItem.Add(movieSrgsOneOf);
 
                 movieSrgsRule = new SrgsRule("seat", phraseSrgsItem);
@@ -234,7 +200,7 @@ namespace Cinema
                             MoveBack();
                             break;
                         case "seat":
-                            Seats[int.Parse(command[1])].Button.PerformAction();
+                            TakeSeat(int.Parse(command.Skip(1).First()));
                             break;
                         case "help":
                             SpeakHelp();
@@ -248,27 +214,44 @@ namespace Cinema
             }
         }
 
+        private void TakeSeat(int index)
+        {
+            try
+            {
+                TakeSeat(GetSeats()[index]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+            }
+        }
+
+        private void TakeSeat(Seat seat)
+        {
+            ChangePage(new TicketDataPage(window, this, sqlConnectionFactory, Screening.Id, seat.Row, seat.No));
+        }
+
         private void InitializeSeatsView()
         {
-            GetSeats();
-            List<RowDefinition> gridRows = new List<RowDefinition>();
-            List<ColumnDefinition> gridColumns = new List<ColumnDefinition>();
-
-            for (int i = 0; i < Seat.Rows; i++)
+            for (int i = 0; i < GetRows(); ++i)
             {
                 SeatsGrid.RowDefinitions.Add(new RowDefinition());
             }
 
-            for (int i = 0; i < Seat.Cols; i++)
+            for (int i = 0; i < GetColumns(); ++i)
             {
                 SeatsGrid.ColumnDefinitions.Add(new ColumnDefinition());
             }
 
-            foreach (Seat seat in Seats)
+            foreach (Seat seat in GetSeats())
             {
-                Grid.SetRow(seat.Button, seat.Button.GetRowNo() - 1);
-                Grid.SetColumn(seat.Button, seat.Button.GetSeatNo() - 1);
-                SeatsGrid.Children.Add(seat.Button);
+                SeatButton seatButton = new SeatButton(seat, new Action(() => {
+                    TakeSeat(seat);
+                }));
+
+                Grid.SetRow(seatButton, seat.Row - 1);
+                Grid.SetColumn(seatButton, seat.No - 1);
+
+                SeatsGrid.Children.Add(seatButton);
             }
         }
 
