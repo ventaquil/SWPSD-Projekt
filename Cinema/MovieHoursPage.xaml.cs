@@ -101,7 +101,11 @@ namespace Cinema
                         new SrgsItem("godzina")
                     )));
                     srgsItem.Add(new SrgsItem(screening.GetHour()));
-                    if (screening.GetMinutes() != "00")
+                    if (screening.GetMinutes() == "00")
+                    {
+                        srgsItem.Add(new SrgsItem(0, 1, screening.GetMinutes()));
+                    }
+                    else
                     {
                         srgsItem.Add(new SrgsItem(screening.GetMinutes()));
                     }
