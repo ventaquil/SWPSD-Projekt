@@ -21,9 +21,11 @@ namespace Cinema
     /// </summary>
     public partial class SummaryPage : Page
     {
-        private int screeningId, seatId, priceId;
-        private float price;
-        private string bookerName;
+        private string BookerName;
+
+        private Price Price;
+
+        private Seat Seat;
 
         private string[] dataTags =
         {
@@ -36,15 +38,13 @@ namespace Cinema
             "Cena: "
         };
 
-        public SummaryPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId, int seatId, int priceId, float price, string bookerName) : base(window, previousPage, sqlConnectionFactory)
+        public SummaryPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Seat seat, Price price, string bookerName) : base(window, previousPage, sqlConnectionFactory)
         {
-            this.screeningId = screeningId;
-            this.seatId = seatId;
-            this.priceId = priceId;
-            this.price = price;
-            this.bookerName = bookerName;
-
             InitializeComponent();
+
+            Seat = seat;
+            Price = price;
+            BookerName = bookerName;
 
             ShowOrderData();
         }
@@ -58,7 +58,7 @@ namespace Cinema
                 {
                     sqlCommand.CommandText = "select Movies.title " +
                         "from Movies, Screenings " +
-                        "where Screenings.movieID = Movies.id and Screenings.id = " + screeningId;
+                        "where Screenings.movieID = Movies.id and Screenings.id = " + Seat.Screening.Id;
 
                     SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                     sqlDataReader.Read();
@@ -70,7 +70,7 @@ namespace Cinema
                 {
                     sqlCommand.CommandText = "select Screenings.screeningDate, Screenings.screeningTime, Screenings.auditoriumID " +
                         "from Screenings " +
-                        "where Screenings.id = " + screeningId;
+                        "where Screenings.id = " + Seat.Screening.Id;
 
                     SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                     sqlDataReader.Read();
@@ -91,14 +91,14 @@ namespace Cinema
                 {
                     sqlCommand.CommandText = "select Seats.rowNo, Seats.seatNo " +
                         "from Seats " +
-                        "where Seats.id = " + seatId;
+                        "where Seats.id = " + Seat.Id;
 
                     SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                     sqlDataReader.Read();
 
                     OrderDataComboBox.Items.Add(dataTags[4] + " rząd " + String.Format("{0}", sqlDataReader[0]) + ", miejsce " + String.Format("{0}", sqlDataReader[1]));
-                    OrderDataComboBox.Items.Add(dataTags[5] + bookerName);
-                    OrderDataComboBox.Items.Add(dataTags[6] + price + " zł");
+                    OrderDataComboBox.Items.Add(dataTags[5] + BookerName);
+                    OrderDataComboBox.Items.Add(dataTags[6] + Price.Value + " zł");
 
                     sqlDataReader.Close();
                 }
@@ -117,7 +117,7 @@ namespace Cinema
                 {
                     sqlCommand.CommandText = "insert into Tickets " +
                         "(seatID, screeningID, priceID, bookerName) " +
-                        "values (" + seatId + "," + screeningId + "," + priceId + ",'" + bookerName + "')";
+                        "values (" + Seat.Id + "," + Seat.Screening.Id + "," + Price.Id + ",'" + BookerName + "')";
 
                     sqlCommand.ExecuteNonQuery();
                 }

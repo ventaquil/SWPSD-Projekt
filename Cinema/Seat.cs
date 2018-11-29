@@ -8,6 +8,8 @@ namespace Cinema
 {
     public class Seat
     {
+        public readonly int Id;
+
         public readonly int No;
 
         public readonly int Row;
@@ -16,9 +18,11 @@ namespace Cinema
 
         public readonly bool Taken;
 
-        public Seat(Screening screening, int no, int row, bool taken)
+        public Seat(Screening screening, int id, int no, int row, bool taken)
         {
             Screening = screening;
+
+            Id = id;
 
             No = no;
 

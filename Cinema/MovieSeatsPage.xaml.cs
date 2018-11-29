@@ -91,7 +91,7 @@ namespace Cinema
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        sqlCommand.CommandText = "SELECT DISTINCT Seats.rowNo, Seats.seatNo, Tickets.id AS ticket " +
+                        sqlCommand.CommandText = "SELECT DISTINCT Seats.id, Seats.rowNo, Seats.seatNo, Tickets.id AS ticket " +
                             "FROM Auditoriums, Screenings, " +
                                 "(Seats LEFT JOIN Tickets ON (Tickets.seatID = Seats.id) AND (Tickets.screeningID = " + Screening.Id + ")) " +
                             "WHERE (Seats.auditoriumID = Auditoriums.id) AND (Auditoriums.id = " + Screening.Auditorium + ")";
@@ -99,11 +99,12 @@ namespace Cinema
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                         while (sqlDataReader.Read())
                         {
-                            int row = int.Parse(string.Format("{0}", sqlDataReader[0]));
-                            int no = int.Parse(string.Format("{0}", sqlDataReader[1]));
-                            bool taken = string.Format("{0}", sqlDataReader[2]) != string.Empty;
+                            int id = int.Parse(string.Format("{0}", sqlDataReader[0]));
+                            int row = int.Parse(string.Format("{0}", sqlDataReader[1]));
+                            int no = int.Parse(string.Format("{0}", sqlDataReader[2]));
+                            bool taken = string.Format("{0}", sqlDataReader[3]) != string.Empty;
 
-                            seats.Add(new Seat(Screening, no, row, taken));
+                            seats.Add(new Seat(Screening, id, no, row, taken));
                         }
                         sqlDataReader.Close();
                     }
@@ -227,7 +228,7 @@ namespace Cinema
 
         private void TakeSeat(Seat seat)
         {
-            ChangePage(new TicketDataPage(window, this, sqlConnectionFactory, Screening.Id, seat.Row, seat.No));
+            ChangePage(new TicketDataPage(window, this, sqlConnectionFactory, seat));
         }
 
         private void InitializeSeatsView()
