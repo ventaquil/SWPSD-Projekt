@@ -27,17 +27,6 @@ namespace Cinema
 
         private Seat Seat;
 
-        private string[] dataTags =
-        {
-            "Film: ",
-            "Data: ",
-            "Godzina: ",
-            "Sala: ",
-            "Miejsce: ",
-            "Zamawiający: ",
-            "Cena: "
-        };
-
         public SummaryPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Seat seat, Price price, string bookerName) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
@@ -50,61 +39,17 @@ namespace Cinema
         }
 
         private void ShowOrderData()
-        {using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
-            {
-                sqlConnection.Open();
+        {
+            Screening screening = Seat.Screening;
+            Movie movie = screening.Movie;
 
-                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                {
-                    sqlCommand.CommandText = "select Movies.title " +
-                        "from Movies, Screenings " +
-                        "where Screenings.movieID = Movies.id and Screenings.id = " + Seat.Screening.Id;
-
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                    sqlDataReader.Read();
-                    OrderDataComboBox.Items.Add(dataTags[0] + String.Format("{0}", sqlDataReader[0]));
-                    sqlDataReader.Close();
-                }
-
-                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                {
-                    sqlCommand.CommandText = "select Screenings.screeningDate, Screenings.screeningTime, Screenings.auditoriumID " +
-                        "from Screenings " +
-                        "where Screenings.id = " + Seat.Screening.Id;
-
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                    sqlDataReader.Read();
-
-                    string date = String.Format("{0}", sqlDataReader[0]).Split(' ')[0];
-
-                    string[] hourDivided = String.Format("{0}", sqlDataReader[1]).Split(':');
-                    string hour = hourDivided[0] + ":" + hourDivided[1];
-
-                    OrderDataComboBox.Items.Add(dataTags[1] + String.Format("{0}", date));
-                    OrderDataComboBox.Items.Add(dataTags[2] + String.Format("{0}", hour));
-                    OrderDataComboBox.Items.Add(dataTags[3] + String.Format("{0}", sqlDataReader[2]));
-
-                    sqlDataReader.Close();
-                }
-
-                using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
-                {
-                    sqlCommand.CommandText = "select Seats.rowNo, Seats.seatNo " +
-                        "from Seats " +
-                        "where Seats.id = " + Seat.Id;
-
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                    sqlDataReader.Read();
-
-                    OrderDataComboBox.Items.Add(dataTags[4] + " rząd " + String.Format("{0}", sqlDataReader[0]) + ", miejsce " + String.Format("{0}", sqlDataReader[1]));
-                    OrderDataComboBox.Items.Add(dataTags[5] + BookerName);
-                    OrderDataComboBox.Items.Add(dataTags[6] + Price.Value + " zł");
-
-                    sqlDataReader.Close();
-                }
-
-                sqlConnection.Close();
-            }
+            OrderDataComboBox.Items.Add(string.Format("Film: {0}", movie.Title));
+            OrderDataComboBox.Items.Add(string.Format("Data: {0}", screening.Date));
+            OrderDataComboBox.Items.Add(string.Format("Godzina: {0}", screening.Time));
+            OrderDataComboBox.Items.Add(string.Format("Sala: {0}", screening.Auditorium));
+            OrderDataComboBox.Items.Add(string.Format("Miejsce: rząd {0}, miejsce {1}", Seat.Row, Seat.No));
+            OrderDataComboBox.Items.Add(string.Format("Zamawiający: {0}", BookerName));
+            OrderDataComboBox.Items.Add(string.Format("Cena: {0} zł", Price.Value));
         }
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
@@ -115,9 +60,8 @@ namespace Cinema
 
                 using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    sqlCommand.CommandText = "insert into Tickets " +
-                        "(seatID, screeningID, priceID, bookerName) " +
-                        "values (" + Seat.Id + "," + Seat.Screening.Id + "," + Price.Id + ",'" + BookerName + "')";
+                    sqlCommand.CommandText = "INSERT INTO Tickets(seatID, screeningID, priceID, bookerName) " +
+                        "VALUES (" + Seat.Id + "," + Seat.Screening.Id + "," + Price.Id + ",'" + BookerName + "')";
 
                     sqlCommand.ExecuteNonQuery();
                 }

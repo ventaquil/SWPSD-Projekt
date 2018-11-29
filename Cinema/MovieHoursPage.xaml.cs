@@ -49,10 +49,10 @@ namespace Cinema
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        sqlCommand.CommandText = "SELECT DISTINCT Screenings.Id, Screenings.auditoriumID, Screenings.screeningTime " +
+                        sqlCommand.CommandText = "SELECT DISTINCT Screenings.Id, Screenings.auditoriumID, Screenings.screeningDate, Screenings.screeningTime " +
                             "FROM Movies, Screenings " +
                             "WHERE (Movies.id = Screenings.movieID) AND " +
-                                "(Movies.title = '" + Movie.Name + "') AND " +
+                                "(Movies.title = '" + Movie.Title + "') AND " +
                                 "(Screenings.screeningDate = CONVERT(date,  GETDATE()))";
 
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
@@ -60,9 +60,10 @@ namespace Cinema
                         {
                             int id = int.Parse(string.Format("{0}", sqlDataReader[0]));
                             int auditorium = int.Parse(string.Format("{0}", sqlDataReader[1]));
-                            string time = string.Format("{0}", sqlDataReader[2]);
+                            string date = string.Format("{0}", sqlDataReader[2]);
+                            string time = string.Format("{0}", sqlDataReader[3]);
 
-                            screenings.Add(new Screening(id, Movie, time, auditorium));
+                            screenings.Add(new Screening(id, Movie, date, time, auditorium));
                         }
                         sqlDataReader.Close();
                     }
@@ -206,7 +207,7 @@ namespace Cinema
         {
             foreach (Screening screening in GetScreenings())
             {
-                HoursListBox.Items.Add(string.Format("{0} \t sala {1} \t godzina {2}", screening.Movie.Name, screening.Auditorium, screening.Time));
+                HoursListBox.Items.Add(string.Format("{0} \t sala {1} \t godzina {2}", screening.Movie.Title, screening.Auditorium, screening.Time));
             }
         }
 

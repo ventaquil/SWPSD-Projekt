@@ -10,11 +10,11 @@ namespace Cinema
     {
         public readonly string Description;
 
-        public readonly string Name;
+        public readonly string Title;
 
         public Movie(string name)
         {
-            Name = name;
+            Title = name;
         }
 
         public Movie(string name, string description) : this(name)

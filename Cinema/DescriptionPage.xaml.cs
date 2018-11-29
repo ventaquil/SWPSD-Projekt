@@ -39,7 +39,7 @@ namespace Cinema
 
         private void InitializeMovieData()
         {
-            TitleTextBlock.Text = Movie.Name;
+            TitleTextBlock.Text = Movie.Title;
 
             DescriptionTextBox.Text = Movie.Description;
         }

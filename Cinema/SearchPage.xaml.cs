@@ -118,7 +118,7 @@ namespace Cinema
                     int i = 0;
                     foreach (Movie movie in movies)
                     {
-                        SrgsItem srgsItem = new SrgsItem(movie.Name);
+                        SrgsItem srgsItem = new SrgsItem(movie.Title);
                         srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"movies." + i++ + "\";"));
 
                         movieSrgsOneOf.Add(srgsItem);
@@ -306,7 +306,7 @@ namespace Cinema
             {
                 foreach (Movie movie in GetMovies())
                 {
-                    ResultsListBox.Items.Add(movie.Name);
+                    ResultsListBox.Items.Add(movie.Title);
                 }
             }
 
