@@ -7,6 +7,10 @@
         <tag>help</tag>
       </item>
       <item>
+        <ruleref uri="#tickets" />
+        <tag>tickets</tag>
+      </item>
+      <item>
         <ruleref uri="#quit" />
         <tag>quit</tag>
       </item>
@@ -15,6 +19,24 @@
 
   <rule id="help">
     <item>Pomoc</item>
+  </rule>
+
+  <rule id="tickets">
+    <one-of>
+      <item>
+        <one-of>
+          <item>Pokaż</item>
+          <item>Wyświetl</item>
+        </one-of>
+        <item repeat="0-1">
+          <one-of>
+            <item>dostępne</item>
+            <item>wszystkie</item>
+          </one-of>
+        </item>
+        <item>bilety</item>
+      </item>
+    </one-of>
   </rule>
 
   <rule id="quit">

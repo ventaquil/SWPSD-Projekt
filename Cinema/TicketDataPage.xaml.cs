@@ -68,6 +68,12 @@ namespace Cinema
                     case "help":
                         SpeakHelp();
                         break;
+                    case "tickets":
+                        DispatchAsync(() =>
+                        {
+                            PriceComboBox.IsDropDownOpen = true;
+                        });
+                        break;
                     case "quit":
                         SpeakQuit();
                         DispatchAsync(Close);
