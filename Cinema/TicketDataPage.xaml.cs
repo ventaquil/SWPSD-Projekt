@@ -1,4 +1,5 @@
 ﻿using Microsoft.Speech.Recognition;
+using Microsoft.Speech.Recognition.SrgsGrammar;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -62,23 +63,65 @@ namespace Cinema
             }
             else
             {
-                string command = result.Semantics.Value.ToString().ToLower();
-                switch (command)
+                string[] command = result.Semantics.Value.ToString().ToLower().Split('.');
+                DispatchAsync(() =>
                 {
-                    case "help":
-                        SpeakHelp();
-                        break;
-                    case "tickets":
-                        DispatchAsync(() =>
-                        {
+                    switch (command.First())
+                    {
+                        case "help":
+                            SpeakHelp();
+                            break;
+                        case "ticket":
+                            PriceComboBox.SelectedIndex = int.Parse(command.Skip(1).First());
+                            PriceComboBox.IsDropDownOpen = false;
+                            break;
+                        case "tickets":
                             PriceComboBox.IsDropDownOpen = true;
-                        });
-                        break;
-                    case "quit":
-                        SpeakQuit();
-                        DispatchAsync(Close);
-                        break;
+                            break;
+                        case "quit":
+                            SpeakQuit();
+                            Close();
+                            break;
+                    }
+                });
+            }
+        }
+
+        protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection srgsRules)
+        {
+            SrgsRule ticketSrgsRule;
+
+            {
+                SrgsOneOf ticketSrgsOneOf = new SrgsOneOf();
+
+                int i = 0;
+                foreach (Price price in GetPrices())
+                {
+                    SrgsItem srgsItem = new SrgsItem(price.Description);
+                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"ticket." + i++ + "\";"));
+
+                    ticketSrgsOneOf.Add(srgsItem);
                 }
+
+                SrgsItem ticketSrgsItem = new SrgsItem("Wybierz");
+                ticketSrgsItem.Add(new SrgsItem(0, 1, "bilet"));
+
+                SrgsItem phraseSrgsItem = new SrgsItem();
+                phraseSrgsItem.Add(ticketSrgsItem);
+                phraseSrgsItem.Add(ticketSrgsOneOf);
+
+                ticketSrgsRule = new SrgsRule("ticket", phraseSrgsItem);
+            }
+
+            srgsRules.Add(ticketSrgsRule);
+
+            {
+                SrgsItem srgsItem = new SrgsItem();
+                srgsItem.Add(new SrgsRuleRef(ticketSrgsRule));
+
+                SrgsRule rootSrgsRule = srgsRules.Where(rule => rule.Id == "root").First();
+                SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
+                srgsOneOf.Add(srgsItem);
             }
         }
 
