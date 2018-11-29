@@ -24,73 +24,9 @@ namespace Cinema
     /// </summary>
     public partial class MovieHoursPage : SpeechPage
     {
-        public class ScreeningData
-        {
-            public readonly String Data;
-
-            public ScreeningData(String data)
-            {
-                Data = data;
-            }
-        };
-
-        public class ScreeningTime
-        {
-            public readonly string Hour, Minutes;
-
-            public ScreeningTime(string hour, string minutes)
-            {
-                Hour = GetHourSpoken(hour);
-                Minutes = GetMinutesSpoken(minutes);
-            }
-
-            private string GetHourSpoken(string hour)
-            {
-                switch (hour)
-                {
-                    case "10":
-                        return "dziesiąta";
-                    case "12":
-                        return "dwunasta";
-                    case "14":
-                        return "czternasta";
-                    case "16":
-                        return "szesnasta";
-                    case "18":
-                        return "osiemnasta";
-                    case "20":
-                        return "dwudziesta";
-                    case "22":
-                        return "dwudziesta druga";
-                }
-
-                return null;
-            }
-
-            private string GetMinutesSpoken(string minutes)
-            {
-                switch (minutes)
-                {
-                    case "00":
-                        return "";
-                    case "15":
-                        return "piętnaście";
-                    case "30":
-                        return "trzydzieści";
-                    case "45":
-                        return "czterdzieści pięć";
-                }
-
-                return null;
-            }
-        };
-
-        private ScreeningData[] ScreeningsData;
-        private ScreeningTime[] ScreeningsTime;
-        
         private Movie Movie;
 
-        private List<int> screeningId;
+        private Screening[] Screenings;
 
         public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Movie movie) : base(window, previousPage, sqlConnectionFactory)
         {
@@ -101,13 +37,11 @@ namespace Cinema
             ListHours();
         }
 
-        public ScreeningTime[] GetScreeningsTime()
+        public Screening[] GetScreenings()
         {
-            if (ScreeningsData == null)
+            if (Screenings == null)
             {
-                screeningId = new List<int>();
-                List<ScreeningData> screeningsData = new List<ScreeningData>();
-                List<ScreeningTime> screeningsTime = new List<ScreeningTime>();
+                List<Screening> screenings = new List<Screening>();
 
                 using (SqlConnection sqlConnection = sqlConnectionFactory.Create())
                 {
@@ -115,24 +49,20 @@ namespace Cinema
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        sqlCommand.CommandText = "select distinct Screenings.id, Movies.title, Screenings.auditoriumID, Screenings.screeningTime " +
-                            "from Movies, Screenings " +
-                            "where Movies.id = Screenings.movieID " +
-                            "and Movies.title = '" + Movie.Name +
-                            "' and Screenings.screeningDate = CONVERT(date,  GETDATE())";
+                        sqlCommand.CommandText = "SELECT DISTINCT Screenings.Id, Screenings.auditoriumID, Screenings.screeningTime " +
+                            "FROM Movies, Screenings " +
+                            "WHERE (Movies.id = Screenings.movieID) AND " +
+                                "(Movies.title = '" + Movie.Name + "') AND " +
+                                "(Screenings.screeningDate = CONVERT(date,  GETDATE()))";
 
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                         while (sqlDataReader.Read())
                         {
-                            screeningId.Add(int.Parse(string.Format("{0}", sqlDataReader[0])));
+                            int id = int.Parse(string.Format("{0}", sqlDataReader[0]));
+                            int auditorium = int.Parse(string.Format("{0}", sqlDataReader[1]));
+                            string time = string.Format("{0}", sqlDataReader[2]);
 
-                            string[] hourDivided = string.Format("{0}", sqlDataReader[3]).Split(':');
-                            string hour = hourDivided[0] + ":" + hourDivided[1];
-
-                            string data = string.Format("{0} \t sala {1} \t godzina {2}", sqlDataReader[1], sqlDataReader[2], hour);
-
-                            screeningsData.Add(new ScreeningData(data));
-                            screeningsTime.Add(new ScreeningTime(hourDivided[0], hourDivided[1]));
+                            screenings.Add(new Screening(id, Movie, time, auditorium));
                         }
                         sqlDataReader.Close();
                     }
@@ -140,11 +70,10 @@ namespace Cinema
                     sqlConnection.Close();
                 }
 
-                ScreeningsData = screeningsData.ToArray();
-                ScreeningsTime = screeningsTime.ToArray();
+                Screenings = screenings.ToArray();
             }
 
-            return ScreeningsTime;
+            return Screenings;
         }
 
         protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
@@ -152,33 +81,35 @@ namespace Cinema
             SrgsRule movieSrgsRule;
 
             {
-                SrgsOneOf movieSrgsOneOfHours = new SrgsOneOf();
+                SrgsOneOf srgsOneOf = new SrgsOneOf();
 
                 int i = 0;
-                foreach (ScreeningTime time in GetScreeningsTime())
+                foreach (Screening screening in GetScreenings())
                 {
-                    SrgsItem srgsItem = new SrgsItem(time.Hour);
+                    SrgsItem srgsItem = new SrgsItem();
+                    srgsItem.Add(new SrgsItem("Sala " + screening.Auditorium));
+                    srgsItem.Add(new SrgsItem(0, 1, new SrgsOneOf(
+                        new SrgsItem(
+                            new SrgsItem("na"),
+                            new SrgsItem(0, 1, "godzinę")
+                        ),
+                        new SrgsItem(
+                            new SrgsItem("o"),
+                            new SrgsItem(0, 1, "godzinie")
+                        ),
+                        new SrgsItem("godzina")
+                    )));
+                    srgsItem.Add(new SrgsItem(screening.GetHour()));
+                    if (screening.GetMinutes() != "00")
+                    {
+                        srgsItem.Add(new SrgsItem(screening.GetMinutes()));
+                    }
                     srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"time." + i++ + "\";"));
 
-                    movieSrgsOneOfHours.Add(srgsItem);
+                    srgsOneOf.Add(srgsItem);
                 }
 
-                SrgsOneOf movieSrgsOneOfMinutes = new SrgsOneOf();
-
-                i = 0;
-                foreach (ScreeningTime time in GetScreeningsTime())
-                {
-                    SrgsItem srgsItem = new SrgsItem(time.Minutes);
-                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"time." + i++ + "\";"));
-
-                    movieSrgsOneOfMinutes.Add(srgsItem);
-                }
-
-                SrgsItem phraseSrgsItem = new SrgsItem();
-                phraseSrgsItem.Add(movieSrgsOneOfHours);
-                phraseSrgsItem.Add(movieSrgsOneOfMinutes);
-
-                movieSrgsRule = new SrgsRule("time", phraseSrgsItem);
+                movieSrgsRule = new SrgsRule("time", srgsOneOf);
             }
 
             rules.Add(movieSrgsRule);
@@ -235,13 +166,13 @@ namespace Cinema
                 string[] command = result.Semantics.Value.ToString().ToLower().Split('.');
                 DispatchAsync(() =>
                 {
-                    switch (command.First()) // TODO show info about movie
+                    switch (command.First())
                     {
                         case "back":
                             MoveBack();
                             break;
                         case "time":
-                            ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[int.Parse(command[1])]));
+                            ChooseScreeningTime(int.Parse(command.Skip(1).First()));
                             break;
                         case "help":
                             SpeakHelp();
@@ -255,12 +186,27 @@ namespace Cinema
             }
         }
 
+        private void ChooseScreeningTime(int index)
+        {
+            try
+            {
+                ChooseScreeningTime(GetScreenings()[index]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+            }
+        }
+
+        private void ChooseScreeningTime(Screening screening)
+        {
+            ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screening));
+        }
+
         private void ListHours()
         {
-            GetScreeningsTime();
-            foreach (ScreeningData data in ScreeningsData)
+            foreach (Screening screening in GetScreenings())
             {
-                HoursListBox.Items.Add(data.Data);
+                HoursListBox.Items.Add(string.Format("{0} \t sala {1} \t godzina {2}", screening.Movie.Name, screening.Auditorium, screening.Time));
             }
         }
 
@@ -271,10 +217,7 @@ namespace Cinema
 
         private void HoursListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!string.Format("{0}", HoursListBox.SelectedItem).Equals(""))
-            {
-                ChangePage(new MovieSeatsPage(window, this, sqlConnectionFactory, screeningId[HoursListBox.SelectedIndex]));
-            }
+            ChooseScreeningTime(HoursListBox.SelectedIndex);
         }
     }
 }

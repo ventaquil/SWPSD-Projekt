@@ -24,27 +24,28 @@ namespace Cinema
     /// </summary>
     public partial class MovieSeatsPage : SpeechPage
     {
-        private int screeningId;
+        private Screening Screening;
 
-        public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, int screeningId) : base(window, previousPage, sqlConnectionFactory)
+        public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Screening screening) : base(window, previousPage, sqlConnectionFactory)
         {
-            this.screeningId = screeningId;
-
             InitializeComponent();
 
-            InitSeatsView();
+            Screening = screening;
+
+            InitializeSeatsView();
         }
 
         public class Seat
         {
             public static int Rows = 0, Cols = 0;
             public SeatButton Button;
-            public readonly String SeatPositionTag;
+            public readonly string SeatPositionTag;
 
             public Seat(SeatButton button)
             {
                 Button = button;
-                SeatPositionTag = "Rząd " + GetRowNoSpoken(button.GetRowNo()) + " miejsce " + GetSeatNoSpoken(button.GetSeatNo());
+                //SeatPositionTag = "Rząd " + GetRowNoSpoken(button.GetRowNo()) + " miejsce " + GetSeatNoSpoken(button.GetSeatNo());
+                SeatPositionTag = "Rząd " + button.GetRowNo() + " miejsce " + button.GetSeatNo();
 
                 if (button.GetRowNo() > Rows) Rows = button.GetRowNo();
                 if (button.GetSeatNo() > Cols) Cols = button.GetSeatNo();
@@ -121,21 +122,19 @@ namespace Cinema
 
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
-                        sqlCommand.CommandText = "select Seats.rowNo, Seats.seatNo " +
-                            "from Seats, Auditoriums, Screenings " +
-                            "where Seats.auditoriumID = Auditoriums.id and " +
-                            "Auditoriums.id = Screenings.auditoriumID and " +
-                            "Screenings.id = " + screeningId;
+                        sqlCommand.CommandText = "SELECT Seats.rowNo, Seats.seatNo " +
+                            "FROM Seats, Auditoriums, Screenings " +
+                            "WHERE (Seats.auditoriumID = Auditoriums.id) AND (Auditoriums.id = " + Screening.Auditorium + ")";
 
                         SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                         while (sqlDataReader.Read())
                         {
-                            int rowNo = int.Parse(String.Format("{0}", sqlDataReader[0]));
-                            int seatNo = int.Parse(String.Format("{0}", sqlDataReader[1]));
+                            int rowNo = int.Parse(string.Format("{0}", sqlDataReader[0]));
+                            int seatNo = int.Parse(string.Format("{0}", sqlDataReader[1]));
                             
                             //Creating UI comps has to be done by STA thread, otherwise ecxeption is thrown
                             DispatchSync(() =>
-                                seats.Add(new Seat(new SeatButton(window, previousPage, sqlConnectionFactory, screeningId, rowNo, seatNo))));
+                                seats.Add(new Seat(new SeatButton(window, previousPage, sqlConnectionFactory, Screening.Id, rowNo, seatNo))));
                         }
                         sqlDataReader.Close();
                     }
@@ -229,7 +228,7 @@ namespace Cinema
                 string[] command = result.Semantics.Value.ToString().ToLower().Split('.');
                 DispatchAsync(() =>
                 {
-                    switch (command.First()) // TODO show info about movie
+                    switch (command.First())
                     {
                         case "back":
                             MoveBack();
@@ -249,7 +248,7 @@ namespace Cinema
             }
         }
 
-        private void InitSeatsView()
+        private void InitializeSeatsView()
         {
             GetSeats();
             List<RowDefinition> gridRows = new List<RowDefinition>();
