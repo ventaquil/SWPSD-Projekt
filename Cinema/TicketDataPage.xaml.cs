@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Speech.Recognition;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -32,6 +33,47 @@ namespace Cinema
             Seat = seat;
 
             InitializeComboBox();
+        }
+
+        private void SpeakHelp()
+        {
+            Speak("Pomoc.");
+        }
+
+        private void SpeakRepeat()
+        {
+            Speak("Powtórz proszę.");
+        }
+
+        private void SpeakQuit()
+        {
+            Speak("Zapraszam ponownie.");
+        }
+
+        protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        {
+            base.SpeechRecognitionEngine_SpeechRecognized(sender, e);
+
+            RecognitionResult result = e.Result;
+
+            if (result.Confidence < 0.6)
+            {
+                SpeakRepeat();
+            }
+            else
+            {
+                string command = result.Semantics.Value.ToString().ToLower();
+                switch (command)
+                {
+                    case "help":
+                        SpeakHelp();
+                        break;
+                    case "quit":
+                        SpeakQuit();
+                        DispatchAsync(Close);
+                        break;
+                }
+            }
         }
 
         private Price[] GetPrices()
@@ -98,7 +140,7 @@ namespace Cinema
         {
             try
             {
-                return GetPrices()[index]; 
+                return GetPrices()[index];
             }
             catch (IndexOutOfRangeException)
             {
