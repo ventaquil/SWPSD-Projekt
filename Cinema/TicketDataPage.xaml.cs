@@ -84,12 +84,25 @@ namespace Cinema
 
         private void AcceptButton_Click(object sender, RoutedEventArgs e)
         {
-            if ((PriceComboBox.SelectedIndex >= 0) && (NameTextBox.Text.Length > 0))
+            Price price = GetPrice(PriceComboBox.SelectedIndex);
+
+            if ((price != null) && (NameTextBox.Text.Length > 0))
             {
-                Price price = GetPrices()[PriceComboBox.SelectedIndex];
                 string bookerName = string.Format("{0}", NameTextBox.Text);
 
                 ChangePage(new SummaryPage(window, this, sqlConnectionFactory, Seat, price, bookerName));
+            }
+        }
+
+        private Price GetPrice(int index)
+        {
+            try
+            {
+                return GetPrices()[index]; 
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return null;
             }
         }
     }
