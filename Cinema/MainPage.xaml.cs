@@ -29,6 +29,7 @@ namespace Cinema
         public MainPage(Window window, SqlConnectionFactory sqlConnectionFactory) : base(window, sqlConnectionFactory)
         {
             InitializeComponent();
+            Loaded += (sender, args) => speechControl.SetParent(this);
         }
 
         public override void InitializeSpeech(object sender, DoWorkEventArgs e)
@@ -53,24 +54,25 @@ namespace Cinema
             MoveToOrderPage();
         }
 
+
         private void SpeakHello()
         {
-            Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
+            Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.", speechControl);
         }
 
         private void SpeakHelp()
         {
-            Speak("Aby kupić bilet powiedz ZAMÓW BILET. Aby wyszukać film powiedz WYSZUKIWARKA FILMÓW. Aby wyjść powiedz ZAKOŃCZ.");
+            Speak("Aby kupić bilet powiedz ZAMÓW BILET. Aby wyszukać film powiedz WYSZUKIWARKA FILMÓW. Aby wyjść powiedz ZAKOŃCZ.", speechControl);
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.");
+            Speak("Powtórz proszę.", speechControl);
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.");
+            Speak("Zapraszam ponownie.", speechControl);
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -108,6 +110,11 @@ namespace Cinema
                         break;
                 }
             }
+        }
+
+        private void SkipSpeechButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

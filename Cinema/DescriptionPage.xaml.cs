@@ -26,6 +26,7 @@ namespace Cinema
         public DescriptionPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Movie movie) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
+            Loaded += (sender, args) => speechControl.SetParent(this);
 
             Movie = movie;
 
@@ -56,18 +57,18 @@ namespace Cinema
         
         private void SpeakHelp()
         {
-            Speak("Aby zamówić bilet powiedz ZAMÓW BILET.");
-            Speak("Aby wrócić powiedz WRÓĆ.");
+            Speak("Aby zamówić bilet powiedz ZAMÓW BILET.", speechControl);
+            Speak("Aby wrócić powiedz WRÓĆ.", speechControl);
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.");
+            Speak("Powtórz proszę.", speechControl);
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.");
+            Speak("Zapraszam ponownie.", speechControl);
         }
 
         protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

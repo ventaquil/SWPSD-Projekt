@@ -28,6 +28,7 @@ namespace Cinema
         public TicketDataPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Seat seat) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
+            //Loaded += (sender, args) => speechControl.SetParent(this);
 
             Seat = seat;
 

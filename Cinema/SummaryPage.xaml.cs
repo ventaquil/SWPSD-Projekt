@@ -30,6 +30,7 @@ namespace Cinema
         public SummaryPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Seat seat, Price price, string bookerName) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
+            //Loaded += (sender, args) => speechControl.SetParent(this);
 
             Seat = seat;
             Price = price;

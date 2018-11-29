@@ -122,6 +122,9 @@
     <Compile Include="SeatButton.xaml.cs">
       <DependentUpon>SeatButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SpeechControl.xaml.cs">
+      <DependentUpon>SpeechControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SpeechPage.cs" />
     <Compile Include="SqlConnectionFactory.cs" />
     <Compile Include="SummaryPage.xaml.cs">
@@ -175,6 +178,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SeatButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SpeechControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -274,6 +281,8 @@
     <Content Include="Properties\Queries\Procedures\GetMoviesByGenre.sql" />
     <Content Include="Properties\Queries\Procedures\GetTicketsInfoList.sql" />
     <Content Include="Properties\Queries\Procedures\MostPopularMovies.sql" />
+    <Resource Include="Resources\soundOff.png" />
+    <Resource Include="Resources\soundOn.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

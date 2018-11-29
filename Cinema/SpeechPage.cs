@@ -21,6 +21,8 @@ namespace Cinema
 
         private SpeechSynthesizer speechSynthesizer;
 
+        private SpeechControl speechControl;
+
         public SpeechPage() : this(null, null, null)
         {
         }
@@ -118,18 +120,28 @@ namespace Cinema
             LoadGrammarAsync(GetSpeechGrammar());
         }
 
-        public void Speak(string message)
+        public void Speak(string message, SpeechControl speechControl)
         {
+            if (this.speechControl == null) this.speechControl = speechControl;
+
             PromptBuilder promptBuilder = new PromptBuilder(CultureInfo);
-            promptBuilder.AppendText(message);
+                promptBuilder.AppendText(message);
 
-            Prompt prompt = new Prompt(promptBuilder);
+                Prompt prompt = new Prompt(promptBuilder);
 
-            Speak(prompt);
+                Speak(prompt);
+                
         }
 
         public void Speak(Prompt prompt)
         {
+            DispatchAsync(new Action(() =>
+            {
+                speechControl.SpeakOnImage.Visibility = Visibility.Hidden;
+                speechControl.SpeakOffImage.Visibility = Visibility.Visible;
+            }));
+            
+
             StopSpeechRecognition();
 
             try
@@ -137,6 +149,12 @@ namespace Cinema
                 speechSynthesizer.Speak(prompt);
 
                 EnableSpeechRecognition();
+
+                DispatchAsync(new Action(() =>
+                {
+                    speechControl.SpeakOffImage.Visibility = Visibility.Hidden;
+                    speechControl.SpeakOnImage.Visibility = Visibility.Visible;
+                }));
             }
             catch (OperationCanceledException)
             {
@@ -153,6 +171,11 @@ namespace Cinema
         public void StopSpeak()
         {
             speechSynthesizer.SpeakAsyncCancelAll();
+            DispatchAsync(new Action(() =>
+            {
+                speechControl.SpeakOffImage.Visibility = Visibility.Hidden;
+                speechControl.SpeakOnImage.Visibility = Visibility.Visible;
+            }));
         }
 
         public void StopSpeechRecognition()
