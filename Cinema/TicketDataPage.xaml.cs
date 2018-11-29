@@ -19,7 +19,7 @@ namespace Cinema
     /// <summary>
     /// Interaction logic for TicketDataPage.xaml
     /// </summary>
-    public partial class TicketDataPage : Page
+    public partial class TicketDataPage : SpeechPage
     {
         private Price[] Prices;
 
