@@ -133,7 +133,7 @@ namespace Cinema
 
                     movieSrgsOneOf.Add(srgsItem);
                 }
-                
+
                 SrgsItem phraseSrgsItem = new SrgsItem();
                 phraseSrgsItem.Add(new SrgsItem(0, 1, "Wybierz"));
                 phraseSrgsItem.Add(movieSrgsOneOf);
@@ -228,7 +228,17 @@ namespace Cinema
 
         private void TakeSeat(Seat seat)
         {
-            ChangePage(new TicketDataPage(window, this, sqlConnectionFactory, seat));
+            if (seat.Taken)
+            {
+                Speak("To miejsce jest zajęte.");
+            }
+            else
+            {
+                DispatchAsync(() =>
+                {
+                    ChangePage(new TicketDataPage(window, this, sqlConnectionFactory, seat));
+                });
+            }
         }
 
         private void InitializeSeatsView()
@@ -245,9 +255,10 @@ namespace Cinema
 
             foreach (Seat seat in GetSeats())
             {
-                SeatButton seatButton = new SeatButton(seat, new Action(() => {
+                SeatButton seatButton = new SeatButton(seat, () =>
+                {
                     TakeSeat(seat);
-                }));
+                });
 
                 Grid.SetRow(seatButton, seat.Row - 1);
                 Grid.SetColumn(seatButton, seat.No - 1);
