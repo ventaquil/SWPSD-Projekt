@@ -68,6 +68,9 @@ namespace Cinema
                 {
                     switch (command.First())
                     {
+                        case "back":
+                            MoveBack();
+                            break;
                         case "help":
                             SpeakHelp();
                             break;

@@ -3,6 +3,10 @@
   <rule id="root" scope="public">
     <one-of>
       <item>
+        <ruleref uri="#back" />
+        <tag>back</tag>
+      </item>
+      <item>
         <ruleref uri="#help" />
         <tag>help</tag>
       </item>
@@ -18,6 +22,14 @@
         <ruleref uri="#quit" />
         <tag>quit</tag>
       </item>
+    </one-of>
+  </rule>
+
+  <rule id="back">
+    <one-of>
+      <item>Cofnij</item>
+      <item>Wróć</item>
+      <item>Powróć</item>
     </one-of>
   </rule>
 
