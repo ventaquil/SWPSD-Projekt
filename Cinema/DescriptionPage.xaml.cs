@@ -1,6 +1,7 @@
 ﻿using Microsoft.Speech.Recognition;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,12 @@ namespace Cinema
             Movie = movie;
 
             InitializeMovieData();
+        }
+
+        public override void InitializeSpeech(object sender, DoWorkEventArgs e)
+        {
+            base.InitializeSpeech(sender, e);
+            Speak("", speechControl);
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

@@ -176,6 +176,7 @@ namespace Cinema
                 speechControl.SpeakOffImage.Visibility = Visibility.Hidden;
                 speechControl.SpeakOnImage.Visibility = Visibility.Visible;
             }));
+            EnableSpeechRecognition();
         }
 
         public void StopSpeechRecognition()

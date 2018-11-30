@@ -245,6 +245,7 @@
     </None>
     <None Include="Resources\OrderPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="Resources\SearchPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -281,8 +282,12 @@
     <Content Include="Properties\Queries\Procedures\GetMoviesByGenre.sql" />
     <Content Include="Properties\Queries\Procedures\GetTicketsInfoList.sql" />
     <Content Include="Properties\Queries\Procedures\MostPopularMovies.sql" />
-    <Resource Include="Resources\soundOff.png" />
-    <Resource Include="Resources\soundOn.png" />
+    <Resource Include="Resources\soundOff.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\soundOn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
