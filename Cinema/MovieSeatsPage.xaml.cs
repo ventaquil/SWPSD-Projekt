@@ -1,5 +1,6 @@
 ﻿using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Recognition.SrgsGrammar;
+using Microsoft.Speech.Synthesis;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -133,7 +134,7 @@ namespace Cinema
 
                     movieSrgsOneOf.Add(srgsItem);
                 }
-                
+
                 SrgsItem phraseSrgsItem = new SrgsItem();
                 phraseSrgsItem.Add(new SrgsItem(0, 1, "Wybierz"));
                 phraseSrgsItem.Add(movieSrgsOneOf);
@@ -167,7 +168,16 @@ namespace Cinema
 
         private void SpeakHelp()
         {
-            Speak("Pomoc.");
+            PromptBuilder promptBuilder = new PromptBuilder();
+            promptBuilder.AppendText("Aby wybrać miejsce powiedz WYBIERZ RZĄD");
+            promptBuilder.AppendSsmlMarkup("<prosody rate=\"slow\"><say-as interpret-as=\"characters\">K</say-as></prosody>");
+            promptBuilder.AppendText("MIEJSCE");
+            promptBuilder.AppendSsmlMarkup("<prosody rate=\"slow\"><say-as interpret-as=\"characters\">L</say-as></prosody>");
+
+            Prompt prompt = new Prompt(promptBuilder);
+
+            Speak(prompt);
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
@@ -228,7 +238,17 @@ namespace Cinema
 
         private void TakeSeat(Seat seat)
         {
-            ChangePage(new TicketDataPage(window, this, sqlConnectionFactory, seat));
+            if (seat.Taken)
+            {
+                Speak("To miejsce jest zajęte.");
+            }
+            else
+            {
+                DispatchAsync(() =>
+                {
+                    ChangePage(new TicketDataPage(window, this, sqlConnectionFactory, seat));
+                });
+            }
         }
 
         private void InitializeSeatsView()
@@ -245,9 +265,10 @@ namespace Cinema
 
             foreach (Seat seat in GetSeats())
             {
-                SeatButton seatButton = new SeatButton(seat, new Action(() => {
+                SeatButton seatButton = new SeatButton(seat, () =>
+                {
                     TakeSeat(seat);
-                }));
+                });
 
                 Grid.SetRow(seatButton, seat.Row - 1);
                 Grid.SetColumn(seatButton, seat.No - 1);
