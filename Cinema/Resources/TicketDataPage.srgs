@@ -7,6 +7,10 @@
         <tag>help</tag>
       </item>
       <item>
+        <ruleref uri="#order" />
+        <tag>order</tag>
+      </item>
+      <item>
         <ruleref uri="#tickets" />
         <tag>tickets</tag>
       </item>
@@ -19,6 +23,13 @@
 
   <rule id="help">
     <item>Pomoc</item>
+  </rule>
+  
+  <rule id="order">
+    <one-of>
+      <item>Gotowe</item>
+      <item>Zamów</item>
+    </one-of>
   </rule>
 
   <rule id="tickets">

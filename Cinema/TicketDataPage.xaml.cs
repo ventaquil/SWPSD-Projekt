@@ -71,6 +71,9 @@ namespace Cinema
                         case "help":
                             SpeakHelp();
                             break;
+                        case "order":
+                            Order();
+                            break;
                         case "ticket":
                             PriceComboBox.SelectedIndex = int.Parse(command.Skip(1).First());
                             PriceComboBox.IsDropDownOpen = false;
@@ -84,6 +87,25 @@ namespace Cinema
                             break;
                     }
                 });
+            }
+        }
+
+        private void Order()
+        {
+            if (PriceComboBox.SelectedIndex == -1)
+            {
+                Speak("Musisz najpierw wybrać rodzaj biletu.");
+            }
+            else if (NameTextBox.Text.Length == 0)
+            {
+                Speak("Podaj swoje imię i nazwisko.");
+            }
+            else
+            {
+                Price price = GetPrice(PriceComboBox.SelectedIndex);
+                string bookerName = string.Format("{0}", NameTextBox.Text);
+
+                ChangePage(new SummaryPage(window, this, sqlConnectionFactory, Seat, price, bookerName));
             }
         }
 
@@ -175,14 +197,7 @@ namespace Cinema
 
         private void AcceptButton_Click(object sender, RoutedEventArgs e)
         {
-            Price price = GetPrice(PriceComboBox.SelectedIndex);
-
-            if ((price != null) && (NameTextBox.Text.Length > 0))
-            {
-                string bookerName = string.Format("{0}", NameTextBox.Text);
-
-                ChangePage(new SummaryPage(window, this, sqlConnectionFactory, Seat, price, bookerName));
-            }
+            Order();
         }
 
         private Price GetPrice(int index)
