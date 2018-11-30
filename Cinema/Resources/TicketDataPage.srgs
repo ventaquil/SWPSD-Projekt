@@ -24,7 +24,7 @@
   <rule id="help">
     <item>Pomoc</item>
   </rule>
-  
+
   <rule id="order">
     <one-of>
       <item>Gotowe</item>
@@ -45,7 +45,12 @@
             <item>wszystkie</item>
           </one-of>
         </item>
-        <item>bilety</item>
+        <item>
+          <one-of>
+            <item>rodzaje biletów</item>
+            <item>bilety</item>
+          </one-of>
+        </item>
       </item>
     </one-of>
   </rule>
