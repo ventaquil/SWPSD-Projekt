@@ -44,19 +44,7 @@ namespace Cinema
 
         private void Seat_Click(object sender, RoutedEventArgs e)
         {
-            PerformAction();
-        }
-
-        public void PerformAction()
-        {
-            if (Seat.Taken)
-            {
-                MessageBox.Show("To miejsce jest już zajęte!");
-            }
-            else
-            {
-                Callback();
-            }
+            Task.Run(Callback);
         }
     }
 }
