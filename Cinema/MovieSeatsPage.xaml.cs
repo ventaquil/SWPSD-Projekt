@@ -1,5 +1,6 @@
 ﻿using Microsoft.Speech.Recognition;
 using Microsoft.Speech.Recognition.SrgsGrammar;
+using Microsoft.Speech.Synthesis;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -167,7 +168,16 @@ namespace Cinema
 
         private void SpeakHelp()
         {
-            Speak("Pomoc.");
+            PromptBuilder promptBuilder = new PromptBuilder();
+            promptBuilder.AppendText("Aby wybrać miejsce powiedz WYBIERZ RZĄD");
+            promptBuilder.AppendSsmlMarkup("<prosody rate=\"slow\"><say-as interpret-as=\"characters\">K</say-as></prosody>");
+            promptBuilder.AppendText("MIEJSCE");
+            promptBuilder.AppendSsmlMarkup("<prosody rate=\"slow\"><say-as interpret-as=\"characters\">L</say-as></prosody>");
+
+            Prompt prompt = new Prompt(promptBuilder);
+
+            Speak(prompt);
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
