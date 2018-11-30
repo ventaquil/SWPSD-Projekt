@@ -38,7 +38,10 @@ namespace Cinema
 
         private void SpeakHelp()
         {
-            Speak("Pomoc.");
+            Speak("Aby pokazać dostępne rodzaje biletów powiedz POKAŻ DOSTĘPNE RODZAJE BILETÓW.");
+            Speak("Aby wybrać bilet powiedz WYBIERZ RODZAJ BILETU.");
+            Speak("Aby kontynuować powiedz GOTOWE.");
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
