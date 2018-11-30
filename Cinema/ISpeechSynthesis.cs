@@ -11,7 +11,7 @@ namespace Cinema
     {
         void InitializeSpeechSynthesis();
 
-        void Speak(String message);
+        void Speak(String message, SpeechControl speechControl);
 
         void StopSpeak();
     }

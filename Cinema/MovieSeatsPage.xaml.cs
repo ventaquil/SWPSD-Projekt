@@ -39,6 +39,7 @@ namespace Cinema
         public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Screening screening) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
+            Loaded += (sender, args) => speechControl.SetParent(this);
 
             Screening = screening;
 
@@ -162,22 +163,22 @@ namespace Cinema
 
         private void SpeakHello()
         {
-            Speak("Wybierz miejsce.");
+            Speak("Wybierz miejsce.", speechControl);
         }
 
         private void SpeakHelp()
         {
-            Speak("Pomoc.");
+            Speak("Pomoc.", speechControl);
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.");
+            Speak("Powtórz proszę.", speechControl);
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.");
+            Speak("Zapraszam ponownie.", speechControl);
         }
 
         protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

@@ -50,7 +50,7 @@ namespace Cinema
         public SearchPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
-
+            Loaded += (sender, args) => speechControl.SetParent(this);
             InitializeComboBoxes();
         }
 
@@ -325,27 +325,27 @@ namespace Cinema
 
         private void SpeakHello()
         {
-            Speak("Witaj w wyszukiwarce.");
+            Speak("Witaj w wyszukiwarce.", speechControl);
         }
 
         private void SpeakHelp()
         {
-            Speak("Aby wyszukać wszystkie filmy powiedz WYSZUKAJ WSZYSTKIE FILMY.");
-            Speak("Aby wyszukać najpopularniejsze powiedz WYSZUKAJ NAJPOPULARNIEJSZE.");
-            Speak("Aby wyświetlić dostępne gatunki powiedz WYŚWIETL GATUNKI.");
-            Speak("Aby wybrać gatunek powiedz WYBIERZ NAZWA GATUNKU.");
-            Speak("Aby wyświetlić szczegóły filmu powiedz WYŚWIETL TYTUŁ FILMU.");
-            Speak("Aby wrócić powiedz WRÓĆ.");
+            Speak("Aby wyszukać wszystkie filmy powiedz WYSZUKAJ WSZYSTKIE FILMY.", speechControl);
+            Speak("Aby wyszukać najpopularniejsze powiedz WYSZUKAJ NAJPOPULARNIEJSZE.", speechControl);
+            Speak("Aby wyświetlić dostępne gatunki powiedz WYŚWIETL GATUNKI.", speechControl);
+            Speak("Aby wybrać gatunek powiedz WYBIERZ NAZWA GATUNKU.", speechControl);
+            Speak("Aby wyświetlić szczegóły filmu powiedz WYŚWIETL TYTUŁ FILMU.", speechControl);
+            Speak("Aby wrócić powiedz WRÓĆ.", speechControl);
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.");
+            Speak("Powtórz proszę.", speechControl);
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.");
+            Speak("Zapraszam ponownie.", speechControl);
         }
 
         protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
