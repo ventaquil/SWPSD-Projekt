@@ -125,22 +125,22 @@ namespace Cinema
             if (this.speechControl == null) this.speechControl = speechControl;
 
             PromptBuilder promptBuilder = new PromptBuilder(CultureInfo);
-                promptBuilder.AppendText(message);
+            promptBuilder.AppendText(message);
 
-                Prompt prompt = new Prompt(promptBuilder);
+            Prompt prompt = new Prompt(promptBuilder);
 
-                Speak(prompt);
-                
+            Speak(prompt);
+
         }
 
         public void Speak(Prompt prompt)
         {
-            DispatchAsync(new Action(() =>
+            DispatchAsync(() =>
             {
                 speechControl.SpeakOnImage.Visibility = Visibility.Hidden;
                 speechControl.SpeakOffImage.Visibility = Visibility.Visible;
-            }));
-            
+            });
+
 
             StopSpeechRecognition();
 
@@ -150,11 +150,11 @@ namespace Cinema
 
                 EnableSpeechRecognition();
 
-                DispatchAsync(new Action(() =>
+                DispatchAsync(() =>
                 {
                     speechControl.SpeakOffImage.Visibility = Visibility.Hidden;
                     speechControl.SpeakOnImage.Visibility = Visibility.Visible;
-                }));
+                });
             }
             catch (OperationCanceledException)
             {
@@ -171,11 +171,11 @@ namespace Cinema
         public void StopSpeak()
         {
             speechSynthesizer.SpeakAsyncCancelAll();
-            DispatchAsync(new Action(() =>
+            DispatchAsync(() =>
             {
                 speechControl.SpeakOffImage.Visibility = Visibility.Hidden;
                 speechControl.SpeakOnImage.Visibility = Visibility.Visible;
-            }));
+            });
             EnableSpeechRecognition();
         }
 
