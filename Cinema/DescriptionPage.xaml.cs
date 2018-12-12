@@ -27,22 +27,21 @@ namespace Cinema
         public DescriptionPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Movie movie) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
-            Loaded += (sender, args) => speechControl.SetParent(this);
+            Loaded += (sender, args) => SpeechControl.SetParent(this);
 
             Movie = movie;
 
             InitializeMovieData();
         }
 
-        public override void InitializeSpeech(object sender, DoWorkEventArgs e)
-        {
-            base.InitializeSpeech(sender, e);
-            Speak("", speechControl);
-        }
-
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             MoveBack();
+        }
+
+        protected override SpeechControl GetSpeechControl()
+        {
+            return SpeechControl;
         }
 
         private void InitializeMovieData()
@@ -51,7 +50,12 @@ namespace Cinema
 
             DescriptionTextBox.Text = Movie.Description;
         }
-        
+
+        public override void InitializeSpeech(object sender, DoWorkEventArgs e)
+        {
+            base.InitializeSpeech(sender, e);
+        }
+
         private void Order()
         {
             ChangePage(new MovieHoursPage(window, previousPage, sqlConnectionFactory, Movie));
@@ -64,18 +68,18 @@ namespace Cinema
         
         private void SpeakHelp()
         {
-            Speak("Aby zamówić bilet powiedz ZAMÓW BILET.", speechControl);
-            Speak("Aby wrócić powiedz WRÓĆ.", speechControl);
+            Speak("Aby zamówić bilet powiedz ZAMÓW BILET.");
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.", speechControl);
+            Speak("Powtórz proszę.");
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.", speechControl);
+            Speak("Zapraszam ponownie.");
         }
 
         protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

@@ -29,7 +29,7 @@ namespace Cinema
         public MainPage(Window window, SqlConnectionFactory sqlConnectionFactory) : base(window, sqlConnectionFactory)
         {
             InitializeComponent();
-            Loaded += (sender, args) => speechControl.SetParent(this);
+            Loaded += (sender, args) => SpeechControl.SetParent(this);
         }
 
         public override void InitializeSpeech(object sender, DoWorkEventArgs e)
@@ -37,6 +37,11 @@ namespace Cinema
             base.InitializeSpeech(sender, e);
 
             SpeakHello();
+        }
+
+        protected override SpeechControl GetSpeechControl()
+        {
+            return SpeechControl;
         }
 
         private void MoveToOrderPage()
@@ -54,25 +59,24 @@ namespace Cinema
             MoveToOrderPage();
         }
 
-
         private void SpeakHello()
         {
-            Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.", speechControl);
+            Speak("Witaj w automacie kinowym gdzie możesz wyszukać filmy lub kupić bilety. Powiedz POMOC w razie potrzeby.");
         }
 
         private void SpeakHelp()
         {
-            Speak("Aby kupić bilet powiedz ZAMÓW BILET. Aby wyszukać film powiedz WYSZUKIWARKA FILMÓW. Aby wyjść powiedz ZAKOŃCZ.", speechControl);
+            Speak("Aby kupić bilet powiedz ZAMÓW BILET. Aby wyszukać film powiedz WYSZUKIWARKA FILMÓW. Aby wyjść powiedz ZAKOŃCZ.");
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.", speechControl);
+            Speak("Powtórz proszę.");
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.", speechControl);
+            Speak("Zapraszam ponownie.");
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
@@ -110,11 +114,6 @@ namespace Cinema
                         break;
                 }
             }
-        }
-
-        private void SkipSpeechButton_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

@@ -30,29 +30,34 @@ namespace Cinema
         public TicketDataPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Seat seat) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
-            Loaded += (sender, args) => speechControl.SetParent(this);
+            Loaded += (sender, args) => SpeechControl.SetParent(this);
 
             Seat = seat;
 
             InitializeComboBox();
         }
 
+        protected override SpeechControl GetSpeechControl()
+        {
+            return SpeechControl;
+        }
+
         private void SpeakHelp()
         {
-            Speak("Aby pokazać dostępne rodzaje biletów powiedz POKAŻ DOSTĘPNE RODZAJE BILETÓW.", speechControl);
-            Speak("Aby wybrać bilet powiedz WYBIERZ RODZAJ BILETU.", speechControl);
-            Speak("Aby kontynuować powiedz GOTOWE.", speechControl);
-            Speak("Aby wrócić powiedz WRÓĆ.", speechControl);
+            Speak("Aby pokazać dostępne rodzaje biletów powiedz POKAŻ DOSTĘPNE RODZAJE BILETÓW.");
+            Speak("Aby wybrać bilet powiedz WYBIERZ RODZAJ BILETU.");
+            Speak("Aby kontynuować powiedz GOTOWE.");
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.", speechControl);
+            Speak("Powtórz proszę.");
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.", speechControl);
+            Speak("Zapraszam ponownie.");
         }
 
         protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -101,11 +106,11 @@ namespace Cinema
         {
             if (PriceComboBox.SelectedIndex == -1)
             {
-                Speak("Musisz najpierw wybrać rodzaj biletu.", speechControl);
+                Speak("Musisz najpierw wybrać rodzaj biletu.");
             }
             else if (NameTextBox.Text.Length == 0)
             {
-                Speak("Podaj swoje imię i nazwisko.", speechControl);
+                Speak("Podaj swoje imię i nazwisko.");
             }
             else
             {

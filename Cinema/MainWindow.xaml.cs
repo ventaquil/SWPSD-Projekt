@@ -26,7 +26,9 @@ namespace Cinema
 
         private static string ConnectionString = "Data Source=(localDB)\\MSSQLLocalDB; AttachDbFilename=" + DatabasePath;
 
-        private readonly Window ticketsWindow;
+        public readonly MainPage MainPage;
+
+        private readonly Window TicketsWindow;
 
         public MainWindow()
         {
@@ -42,8 +44,8 @@ namespace Cinema
 
             SqlConnectionFactory sqlConnectionFactory = CreateSqlConnectionFactory();
 
-            ticketsWindow = new TicketsLogWindow(sqlConnectionFactory);
-            Content = new MainPage(this, sqlConnectionFactory);
+            TicketsWindow = new TicketsLogWindow(sqlConnectionFactory);
+            Content = MainPage = new MainPage(this, sqlConnectionFactory);
 
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
@@ -63,10 +65,10 @@ namespace Cinema
 
                 using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                 {
-                    sqlCommand.CommandText = String.Format("CREATE DATABASE {0} ON PRIMARY (NAME={0}, FILENAME='{1}')", databaseName, DatabasePath);
+                    sqlCommand.CommandText = string.Format("CREATE DATABASE {0} ON PRIMARY (NAME={0}, FILENAME='{1}')", databaseName, DatabasePath);
                     sqlCommand.ExecuteNonQuery();
 
-                    sqlCommand.CommandText = String.Format("EXEC sp_detach_db '{0}', 'true'", databaseName);
+                    sqlCommand.CommandText = string.Format("EXEC sp_detach_db '{0}', 'true'", databaseName);
                     sqlCommand.ExecuteNonQuery();
                 }
 
@@ -88,7 +90,7 @@ namespace Cinema
                     MessageBox.Show(sqlException.Message.ToString(), "Error message");
                 }
 
-                String[] commands = new String[] {
+                string[] commands = new string[] {
                     Properties.Resources.CreateTables,
                     Properties.Resources.Inserts,
                     Properties.Resources.GetMoviesByGenre,
@@ -96,7 +98,7 @@ namespace Cinema
                     Properties.Resources.MostPopularMovies
                 };
 
-                foreach (String command in commands)
+                foreach (string command in commands)
                 {
                     using (SqlCommand sqlCommand = sqlConnection.CreateCommand())
                     {
@@ -117,7 +119,7 @@ namespace Cinema
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            ticketsWindow.Close();
+            TicketsWindow.Close();
         }
     }
 }

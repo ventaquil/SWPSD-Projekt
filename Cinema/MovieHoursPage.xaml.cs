@@ -31,7 +31,7 @@ namespace Cinema
         public MovieHoursPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Movie movie) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
-            Loaded += (sender, args) => speechControl.SetParent(this);
+            Loaded += (sender, args) => SpeechControl.SetParent(this);
 
             Movie = movie;
 
@@ -76,6 +76,11 @@ namespace Cinema
             }
 
             return Screenings;
+        }
+
+        protected override SpeechControl GetSpeechControl()
+        {
+            return SpeechControl;
         }
 
         protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
@@ -139,22 +144,22 @@ namespace Cinema
 
         private void SpeakHello()
         {
-            Speak("Wybierz godzinę seansu.", speechControl);
+            Speak("Wybierz godzinę seansu.");
         }
 
         private void SpeakHelp()
         {
-            Speak("Pomoc.", speechControl);
+            Speak("Pomoc.");
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.", speechControl);
+            Speak("Powtórz proszę.");
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.", speechControl);
+            Speak("Zapraszam ponownie.");
         }
 
         protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

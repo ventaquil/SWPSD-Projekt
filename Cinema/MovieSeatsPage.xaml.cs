@@ -40,7 +40,7 @@ namespace Cinema
         public MovieSeatsPage(Window window, Page previousPage, SqlConnectionFactory sqlConnectionFactory, Screening screening) : base(window, previousPage, sqlConnectionFactory)
         {
             InitializeComponent();
-            Loaded += (sender, args) => speechControl.SetParent(this);
+            Loaded += (sender, args) => SpeechControl.SetParent(this);
 
             Screening = screening;
 
@@ -120,6 +120,11 @@ namespace Cinema
             return Seats;
         }
 
+        protected override SpeechControl GetSpeechControl()
+        {
+            return SpeechControl;
+        }
+
         protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
         {
             SrgsRule movieSrgsRule;
@@ -164,7 +169,7 @@ namespace Cinema
 
         private void SpeakHello()
         {
-            Speak("Wybierz miejsce.", speechControl);
+            Speak("Wybierz miejsce.");
         }
 
         private void SpeakHelp()
@@ -178,17 +183,17 @@ namespace Cinema
             Prompt prompt = new Prompt(promptBuilder);
 
             Speak(prompt);
-            Speak("Aby wrócić powiedz WRÓĆ.", speechControl);
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
         {
-            Speak("Powtórz proszę.", speechControl);
+            Speak("Powtórz proszę.");
         }
 
         private void SpeakQuit()
         {
-            Speak("Zapraszam ponownie.", speechControl);
+            Speak("Zapraszam ponownie.");
         }
 
         protected override void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -241,7 +246,7 @@ namespace Cinema
         {
             if (seat.Taken)
             {
-                Speak("To miejsce jest zajęte.", speechControl);
+                Speak("To miejsce jest zajęte.");
             }
             else
             {

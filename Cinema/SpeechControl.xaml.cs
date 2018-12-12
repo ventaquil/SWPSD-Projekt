@@ -20,7 +20,7 @@ namespace Cinema
     /// </summary>
     public partial class SpeechControl : UserControl
     {
-        private SpeechPage page;
+        private SpeechPage Page;
 
         public SpeechControl()
         {
@@ -29,12 +29,24 @@ namespace Cinema
 
         internal void SetParent(SpeechPage page)
         {
-            this.page = page;
+            Page = page;
         }
 
         private void SkipSpeechButton_Click(object sender, RoutedEventArgs e)
         {
-            page.StopSpeak();
+            Page?.StopSpeak();
+        }
+
+        internal void SwitchOn()
+        {
+            SpeakOnImage.Visibility = Visibility.Visible;
+            SpeakOffImage.Visibility = Visibility.Hidden;
+        }
+
+        internal void SwitchOff()
+        {
+            SpeakOnImage.Visibility = Visibility.Hidden;
+            SpeakOffImage.Visibility = Visibility.Visible;
         }
     }
 }

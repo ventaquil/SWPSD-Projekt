@@ -213,7 +213,7 @@
             <ImageBrush ImageSource="Resources/background.jpg" Stretch="Fill" Opacity="0.5"/>
         </Grid.Background>
 
-        <local:SpeechControl x:Name="speechControl" Margin="0,620,650,0"/>
+        <local:SpeechControl x:Name="SpeechControl" Margin="0,620,650,0"/>
 
         <Button Margin="-690,-737,0,0" Style="{StaticResource ButtonStyle}"
                 Content="&lt;&lt;" x:Name="BackButton" Click="BackButton_Click"/>

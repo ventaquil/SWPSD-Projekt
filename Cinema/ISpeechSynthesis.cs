@@ -1,4 +1,5 @@
 ﻿using Microsoft.Speech.Recognition;
+using Microsoft.Speech.Synthesis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,9 @@ namespace Cinema
     {
         void InitializeSpeechSynthesis();
 
-        void Speak(String message, SpeechControl speechControl);
+        void Speak(string message);
+
+        void Speak(Prompt prompt);
 
         void StopSpeak();
     }

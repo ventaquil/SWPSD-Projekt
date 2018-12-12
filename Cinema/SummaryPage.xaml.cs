@@ -72,7 +72,7 @@ namespace Cinema
 
             MessageBox.Show("Bilet został zamówiony!");
 
-            ChangePage(new MainPage(window, sqlConnectionFactory));
+            ChangePage(((MainWindow)window).MainPage);
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

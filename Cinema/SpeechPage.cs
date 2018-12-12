@@ -21,8 +21,6 @@ namespace Cinema
 
         private SpeechSynthesizer speechSynthesizer;
 
-        private SpeechControl speechControl;
-
         public SpeechPage() : this(null, null, null)
         {
         }
@@ -120,45 +118,47 @@ namespace Cinema
             LoadGrammarAsync(GetSpeechGrammar());
         }
 
-        public void Speak(string message, SpeechControl speechControl)
+        protected virtual SpeechControl GetSpeechControl()
         {
-            if (this.speechControl == null) this.speechControl = speechControl;
+            return null;
+        }
 
+        public void Speak(string message)
+        {
             PromptBuilder promptBuilder = new PromptBuilder(CultureInfo);
             promptBuilder.AppendText(message);
 
             Prompt prompt = new Prompt(promptBuilder);
 
             Speak(prompt);
-
         }
 
-        public void Speak(Prompt prompt)
+        public async void Speak(Prompt prompt)
         {
             DispatchAsync(() =>
             {
-                speechControl.SpeakOnImage.Visibility = Visibility.Hidden;
-                speechControl.SpeakOffImage.Visibility = Visibility.Visible;
+                GetSpeechControl()?.SwitchOff();
             });
-
 
             StopSpeechRecognition();
 
-            try
+            await Task.Run(() =>
             {
-                speechSynthesizer.Speak(prompt);
-
-                EnableSpeechRecognition();
-
-                DispatchAsync(() =>
+                try
                 {
-                    speechControl.SpeakOffImage.Visibility = Visibility.Hidden;
-                    speechControl.SpeakOnImage.Visibility = Visibility.Visible;
-                });
-            }
-            catch (OperationCanceledException)
-            {
-            }
+                    speechSynthesizer.Speak(prompt);
+
+                    EnableSpeechRecognition();
+
+                    DispatchAsync(() =>
+                    {
+                        GetSpeechControl()?.SwitchOn();
+                    });
+                }
+                catch (OperationCanceledException)
+                {
+                }
+            });
         }
 
         protected virtual void SpeechRecognitionEngine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -171,11 +171,12 @@ namespace Cinema
         public void StopSpeak()
         {
             speechSynthesizer.SpeakAsyncCancelAll();
+
             DispatchAsync(() =>
             {
-                speechControl.SpeakOffImage.Visibility = Visibility.Hidden;
-                speechControl.SpeakOnImage.Visibility = Visibility.Visible;
+                GetSpeechControl()?.SwitchOn();
             });
+
             EnableSpeechRecognition();
         }
 

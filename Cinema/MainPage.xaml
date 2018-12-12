@@ -65,7 +65,7 @@
             <ImageBrush ImageSource="Resources/background.jpg" Stretch="Fill" Opacity="0.5"/>
         </Grid.Background>
 
-        <local:SpeechControl x:Name="speechControl" Margin="0,620,650,0"/>
+        <local:SpeechControl x:Name="SpeechControl" Margin="0,620,650,0"/>
 
         <TextBlock Margin="0,0,0,300" FontSize="50" Style="{StaticResource TextBlockStyle}"
                    Text="Kino... czy coś... !!!"/>
