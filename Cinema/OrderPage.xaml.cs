@@ -166,7 +166,8 @@ namespace Cinema
 
         private void SpeakHelp()
         {
-            Speak("Pomoc.");
+            Speak("Aby wybrać film powiedz WYBIERZ TYTUŁ FILMU.");
+            Speak("Aby wrócić powiedz WRÓĆ.");
         }
 
         private void SpeakRepeat()
