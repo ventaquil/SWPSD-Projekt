@@ -165,7 +165,7 @@
             </Setter>
         </Style>
 
-        <Style x:Key="ListBoxStyle" TargetType="ListBox">
+        <Style x:Key="ItemsControlStyle" TargetType="ItemsControl">
             <Setter Property="Width" Value="500"/>
             <Setter Property="Height" Value="200"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
@@ -197,8 +197,8 @@
         <TextBlock Margin="10,-170,10,0" FontSize="20" Style="{StaticResource TextBlockStyle}"
                    Text="Sprawdź, czy wszystko się zgadza. &#x0a; Jeżeli tak, kliknij 'Zamów!'."/>
 
-        <ListBox Margin="0,250,0,50" Style="{StaticResource ListBoxStyle}"
-                 x:Name="OrderDataComboBox"/>
+        <ItemsControl Margin="0,250,0,50" Style="{StaticResource ItemsControlStyle}"
+                 x:Name="OrderDataItemsControl"/>
 
         <Button Margin="350,500,0,0" Style="{StaticResource ButtonStyle}" 
                 Content="Zamów!" x:Name="OrderButton" Click="OrderButton_Click"/>

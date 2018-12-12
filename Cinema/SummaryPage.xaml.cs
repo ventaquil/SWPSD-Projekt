@@ -43,14 +43,14 @@ namespace Cinema
         {
             Screening screening = Seat.Screening;
             Movie movie = screening.Movie;
-
-            OrderDataComboBox.Items.Add(string.Format("Film: {0}", movie.Title));
-            OrderDataComboBox.Items.Add(string.Format("Data: {0}", screening.Date));
-            OrderDataComboBox.Items.Add(string.Format("Godzina: {0}", screening.Time));
-            OrderDataComboBox.Items.Add(string.Format("Sala: {0}", screening.Auditorium));
-            OrderDataComboBox.Items.Add(string.Format("Miejsce: rząd {0}, miejsce {1}", Seat.Row, Seat.No));
-            OrderDataComboBox.Items.Add(string.Format("Zamawiający: {0}", BookerName));
-            OrderDataComboBox.Items.Add(string.Format("Cena: {0} zł", Price.Value));
+        
+            OrderDataItemsControl.Items.Add(string.Format("Film: {0}", movie.Title));
+            OrderDataItemsControl.Items.Add(string.Format("Data: {0}", screening.Date));
+            OrderDataItemsControl.Items.Add(string.Format("Godzina: {0}", screening.Time));
+            OrderDataItemsControl.Items.Add(string.Format("Sala: {0}", screening.Auditorium));
+            OrderDataItemsControl.Items.Add(string.Format("Miejsce: rząd {0}, miejsce {1}", Seat.Row, Seat.No));
+            OrderDataItemsControl.Items.Add(string.Format("Zamawiający: {0}", BookerName));
+            OrderDataItemsControl.Items.Add(string.Format("Cena: {0} zł", Price.Value));
         }
 
         private void OrderButton_Click(object sender, RoutedEventArgs e)
