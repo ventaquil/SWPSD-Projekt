@@ -47,11 +47,11 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
     </UserControl.Resources>
-    
+
     <Grid>
-        <Image x:Name="SpeakOnImage" Style="{StaticResource ImageStyle}" Source="Resources/soundOn.png" Margin="0,0,0,60"/>
-        <Image x:Name="SpeakOffImage" Style="{StaticResource ImageStyle}" Source="Resources/soundOff.png" Margin="0,0,0,60"/>
+        <Image x:Name="SpeakOnImage" Style="{StaticResource ImageStyle}" Source="Resources/soundOn.png" Margin="0,0,0,60" />
+        <Image x:Name="SpeakOffImage" Style="{StaticResource ImageStyle}" Source="Resources/soundOff.png" Margin="0,0,0,60" Visibility="Hidden" />
         <Button Style="{StaticResource ButtonStyle}" Margin="0,60,0,0"
-                Content="Pomiń mowę" x:Name="SkipSpeechButton" Click="SkipSpeechButton_Click"/>
+                Content="Pomiń mowę" x:Name="SkipSpeechButton" Click="SkipSpeechButton_Click" Visibility="Hidden" />
     </Grid>
 </UserControl>

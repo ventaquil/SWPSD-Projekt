@@ -41,12 +41,16 @@ namespace Cinema
         {
             SpeakOnImage.Visibility = Visibility.Visible;
             SpeakOffImage.Visibility = Visibility.Hidden;
+
+            SkipSpeechButton.Visibility = Visibility.Hidden;
         }
 
         internal void SwitchOff()
         {
             SpeakOnImage.Visibility = Visibility.Hidden;
             SpeakOffImage.Visibility = Visibility.Visible;
+
+            SkipSpeechButton.Visibility = Visibility.Visible;
         }
     }
 }
