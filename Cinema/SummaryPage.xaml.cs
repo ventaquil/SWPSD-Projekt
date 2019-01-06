@@ -144,10 +144,8 @@ namespace Cinema
 
                 sqlConnection.Close();
             }
-
-            Speak("Dziękujemy za złożenie zamówienia!");
-
-            ChangePage(((MainWindow)window).MainPage);
+            
+            ChangePage(new ConfirmationPage(window, sqlConnectionFactory, Seat, Price, BookerName));
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

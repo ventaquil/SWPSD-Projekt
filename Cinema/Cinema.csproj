@@ -127,6 +127,9 @@
     </Compile>
     <Compile Include="SpeechPage.cs" />
     <Compile Include="SqlConnectionFactory.cs" />
+    <Compile Include="ConfirmationPage.xaml.cs">
+      <DependentUpon>ConfirmationPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
@@ -184,6 +187,10 @@
     <Page Include="SpeechControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ConfirmationPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="SummaryPage.xaml">
       <SubType>Designer</SubType>
@@ -248,6 +255,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Resources\SearchPage.srgs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ConfirmationPage.srgs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\SummaryPage.srgs">
