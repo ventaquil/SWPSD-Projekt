@@ -29,11 +29,15 @@ namespace Cinema
 
         private bool ColumnsSet = false;
 
+        private int? Row;
+
         private int Rows;
 
         private bool RowsSet = false;
 
         private Screening Screening;
+
+        private int? Seat;
 
         private Seat[] Seats;
 
@@ -311,11 +315,27 @@ namespace Cinema
                         case "back":
                             MoveBack();
                             break;
+                        case "help":
+                            SpeakHelp();
+                            break;
+                        case "row":
+                            if (Row != null)
+                            {
+                                Seat = null;
+                            }
+                            Row = int.Parse(command.Skip(1).First());
+                            TakeSeat(Row, Seat);
+                            break;
                         case "rowseat":
                             TakeSeat(int.Parse(command.Skip(1).First()));
                             break;
-                        case "help":
-                            SpeakHelp();
+                        case "seat":
+                            if (Seat != null)
+                            {
+                                Row = null;
+                            }
+                            Seat = int.Parse(command.Skip(1).First());
+                            TakeSeat(Row, Seat);
                             break;
                         case "quit":
                             SpeakQuit();
@@ -323,6 +343,38 @@ namespace Cinema
                             break;
                     }
                 });
+            }
+        }
+
+        private void TakeSeat(int? row, int? seat)
+        {
+            if (row == null)
+            {
+                if (GetRows() > 1)
+                {
+                    Speak("Który rząd?");
+                } else
+                {
+                    row = 1;
+                }
+            }
+
+            if (seat == null)
+            {
+                if (GetColumns() > 1)
+                {
+                    Speak("Które miejsce?");
+                } else
+                {
+                    seat = 1;
+                }
+            }
+
+            if ((row != null) && (seat != null))
+            {
+                int index = ((int) seat - 1) + (GetColumns() * ((int) row - 1));
+
+                TakeSeat(index);
             }
         }
 
