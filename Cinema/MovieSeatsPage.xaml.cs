@@ -127,32 +127,127 @@ namespace Cinema
 
         protected override void AddCustomSpeechGrammarRules(SrgsRulesCollection rules)
         {
-            SrgsRule movieSrgsRule;
+            AddRowSpeechGrammarRules(rules);
+            AddRowSeatSpeechGrammarRules(rules);
+            AddSeatSpeechGrammarRules(rules);
+        }
+
+        private void AddRowSpeechGrammarRules(SrgsRulesCollection rules)
+        {
+            SrgsRule rowSrgsRule;
 
             {
-                SrgsOneOf movieSrgsOneOf = new SrgsOneOf();
+                SrgsOneOf rowSrgsOneOf = new SrgsOneOf();
+
+                List<int> rows = new List<int>();
+
+                foreach (Seat seat in GetSeats())
+                {
+                    if (!rows.Contains(seat.Row))
+                    {
+                        rows.Add(seat.Row);
+                    }
+                }
+
+                foreach (int row in rows)
+                {
+                    SrgsItem srgsItem = new SrgsItem("Rząd " + row);
+                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"row." + row + "\";"));
+
+                    rowSrgsOneOf.Add(srgsItem);
+                }
+
+                SrgsItem phraseSrgsItem = new SrgsItem();
+                phraseSrgsItem.Add(new SrgsItem(0, 1, "Wybierz"));
+                phraseSrgsItem.Add(rowSrgsOneOf);
+
+                rowSrgsRule = new SrgsRule("row", phraseSrgsItem);
+            }
+
+            rules.Add(rowSrgsRule);
+
+            {
+                SrgsItem srgsItem = new SrgsItem();
+                srgsItem.Add(new SrgsRuleRef(rowSrgsRule));
+
+                SrgsRule rootSrgsRule = rules.Where(rule => rule.Id == "root").First();
+                SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
+                srgsOneOf.Add(srgsItem);
+            }
+        }
+
+        private void AddRowSeatSpeechGrammarRules(SrgsRulesCollection rules)
+        {
+            SrgsRule rowSeatSrgsRule;
+
+            {
+                SrgsOneOf rowSeatSrgsOneOf = new SrgsOneOf();
 
                 int i = 0;
                 foreach (Seat seat in GetSeats())
                 {
                     SrgsItem srgsItem = new SrgsItem("Rząd " + seat.Row + " miejsce " + seat.No);
-                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"seat." + i++ + "\";"));
+                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"rowseat." + i++ + "\";"));
 
-                    movieSrgsOneOf.Add(srgsItem);
+                    rowSeatSrgsOneOf.Add(srgsItem);
                 }
 
                 SrgsItem phraseSrgsItem = new SrgsItem();
                 phraseSrgsItem.Add(new SrgsItem(0, 1, "Wybierz"));
-                phraseSrgsItem.Add(movieSrgsOneOf);
+                phraseSrgsItem.Add(rowSeatSrgsOneOf);
 
-                movieSrgsRule = new SrgsRule("seat", phraseSrgsItem);
+                rowSeatSrgsRule = new SrgsRule("rowseat", phraseSrgsItem);
             }
 
-            rules.Add(movieSrgsRule);
+            rules.Add(rowSeatSrgsRule);
 
             {
                 SrgsItem srgsItem = new SrgsItem();
-                srgsItem.Add(new SrgsRuleRef(movieSrgsRule));
+                srgsItem.Add(new SrgsRuleRef(rowSeatSrgsRule));
+
+                SrgsRule rootSrgsRule = rules.Where(rule => rule.Id == "root").First();
+                SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
+                srgsOneOf.Add(srgsItem);
+            }
+        }
+
+        private void AddSeatSpeechGrammarRules(SrgsRulesCollection rules)
+        {
+            SrgsRule seatSrgsRule;
+
+            {
+                SrgsOneOf seatSrgsOneOf = new SrgsOneOf();
+
+                List<int> seats = new List<int>();
+
+                foreach (Seat seat in GetSeats())
+                {
+                    if (!seats.Contains(seat.No))
+                    {
+                        seats.Add(seat.No);
+                    }
+                }
+
+                foreach (int seat in seats)
+                {
+                    SrgsItem srgsItem = new SrgsItem("Miejsce " + seat);
+                    srgsItem.Add(new SrgsSemanticInterpretationTag("out=\"seat." + seat + "\";"));
+
+                    seatSrgsOneOf.Add(srgsItem);
+                }
+
+                SrgsItem phraseSrgsItem = new SrgsItem();
+                phraseSrgsItem.Add(new SrgsItem(0, 1, "Wybierz"));
+                phraseSrgsItem.Add(seatSrgsOneOf);
+
+                seatSrgsRule = new SrgsRule("seat", phraseSrgsItem);
+            }
+
+            rules.Add(seatSrgsRule);
+
+            {
+                SrgsItem srgsItem = new SrgsItem();
+                srgsItem.Add(new SrgsRuleRef(seatSrgsRule));
 
                 SrgsRule rootSrgsRule = rules.Where(rule => rule.Id == "root").First();
                 SrgsOneOf srgsOneOf = (SrgsOneOf)rootSrgsRule.Elements.Where(element => element is SrgsOneOf).First();
@@ -216,7 +311,7 @@ namespace Cinema
                         case "back":
                             MoveBack();
                             break;
-                        case "seat":
+                        case "rowseat":
                             TakeSeat(int.Parse(command.Skip(1).First()));
                             break;
                         case "help":
